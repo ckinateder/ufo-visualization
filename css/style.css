@@ -1,0 +1,23 @@
+#ufo-map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 70%;
+  width: 70%;
+}
+
+#tooltip {
+  position: absolute;
+  opacity: 0;
+  background: #fff;
+  box-shadow: 2px 2px 3px 0px rgb(92 92 92 / 0.5);
+  border: 1px solid #ddd;
+  padding: 2px 8px;
+  width: 200px;
+}
+.tooltip-label {
+  color: #333;
+  font-weight: 500;
+  font-size: 13px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
