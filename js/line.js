@@ -1,110 +1,145 @@
-class LineChart {
+class TimeLineChart {
   constructor(_config, _data, attribute1, attribute2) {
     this.config = {
       parentElement: _config.parentElement,
-      containerWidth: _config.containerWidth || 900,
+      containerWidth: _config.containerWidth || 1200,
       containerHeight: _config.containerHeight || 500,
-      margin: { top: 10, bottom: 30, right: 10, left: 30 },
+      margin: { top: 30, bottom: 55, right: 10, left: 50 },
     };
 
-    this.attribute1 = attribute1;
-    this.attribute2 = attribute2;
-    this.data = _data;
+    this.setData(_data, attribute1, attribute2);
 
     // Call a class function
     this.initVis();
   }
   initVis() {
-    let vis = this;
-    //set up the width and height of the area where visualizations will go- factoring in margins
-    this.width =
-      this.config.containerWidth -
-      this.config.margin.left -
-      this.config.margin.right;
-    this.height =
-      this.config.containerHeight -
-      this.config.margin.top -
-      this.config.margin.bottom;
+    let vis = this; // create svg element
 
-    //reusable functions for x and y
-    //if you reuse a function frequetly, you can define it as a parameter
-    //also, maybe someday you will want the user to be able to re-set it.
-    vis.xValue = (d) => d[vis.attribute1];
-    vis.yValue = (d) => d[vis.attribute2];
+    vis.width =
+      vis.config.containerWidth -
+      vis.config.margin.left -
+      vis.config.margin.right;
+    vis.height =
+      vis.config.containerHeight -
+      vis.config.margin.top -
+      vis.config.margin.bottom;
 
-    //setup scales
-    vis.xScale = d3
-      .scaleLinear()
-      .domain(d3.extent(vis.data, vis.xValue)) //d3.min(vis.data, d => d[vis.attribute1]), d3.max(vis.data, d => d[vis.attribute1]) );
-      .range([0, vis.width]);
-
-    vis.yScale = d3
-      .scaleLinear()
-      .domain(d3.extent(vis.data, vis.yValue))
-      .range([vis.height, 0])
-      .nice(); //this just makes the y axes behave nicely by rounding up
-
-    // Define size of SVG drawing area
     vis.svg = d3
       .select(vis.config.parentElement)
-      .attr("width", vis.config.containerWidth)
-      .attr("height", vis.config.containerHeight);
+      .append("svg")
+      .attr("width", vis.width)
+      .attr("height", vis.height);
 
-    // Create a group element to hold the line chart
-    vis.chart = vis.svg
-      .append("g")
-      .attr(
-        "transform",
-        `translate(${vis.config.margin.left},${vis.config.margin.top})`
-      );
+    this.updateVis();
+  }
 
-    // Add X axis --> it is a date format
-    const x = d3
+  // //leave this empty for now...
+  updateVis() {
+    let vis = this; // create svg element
+
+    // resuable function to get the x and y value
+    let xValue = (d) => d[vis.attribute1];
+    let yValue = (d) => d[vis.attribute2];
+
+    // Create the scale
+    vis.x = d3
       .scaleTime()
-      .domain(
-        d3.extent(vis.data, function (d) {
-          return d[vis.attribute1];
-        })
-      )
-      .range([0, vis.width]);
+      .domain(d3.extent(vis.data, xValue))
+      .range([vis.config.margin.left, vis.width - vis.config.margin.right]);
+
+    // Make xAxis svg element using the x-scale.
+    vis.xAxis = d3.axisBottom(vis.x).ticks(10);
+
+    // Append the xAxis to the plot
     vis.svg
       .append("g")
-      .attr("transform", `translate(0, ${vis.height})`)
-      .call(d3.axisBottom(x));
+      .attr("id", "x-axis")
+      .attr(
+        "transform",
+        `translate(0, ${vis.height - vis.config.margin.bottom})`
+      )
+      .call(vis.xAxis);
 
-    // Add Y axis
-    const y = d3
+    // Add X axis label
+    vis.svg
+      .append("text")
+      .attr("text-anchor", "middle")
+      .attr("x", vis.config.margin.left + vis.width / 2)
+      .attr("y", vis.height - vis.config.margin.bottom / 2)
+      .attr("id", "x-axis-label")
+      .style("font-size", "12px")
+      .text("Year");
+
+    // Create the y scale
+    vis.y = d3
       .scaleLinear()
-      .domain([
-        0,
-        d3.max(vis.data, function (d) {
-          return +d[vis.attribute2];
-        }),
-      ])
-      .range([vis.height, 0]);
+      .domain([0, d3.max(vis.data, yValue)])
+      .range([vis.height - vis.config.margin.bottom, vis.config.margin.top]);
 
-    vis.svg.append("g").call(d3.axisLeft(y));
+    // Make yAxis svg element using the y-scale.
+    vis.yAxis = d3.axisLeft(vis.y).ticks(10);
 
-    // Add the line
+    // Append the yAxis to the plot
+    vis.svg
+      .append("g")
+      .attr("id", "y-axis")
+      .attr("transform", `translate(${vis.config.margin.left}, 0)`)
+      .call(vis.yAxis);
+
+    // Add Y axis label
+    vis.svg
+      .append("text")
+      .attr("text-anchor", "end")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("x", -vis.height / 2)
+      .attr("id", "y-axis-label")
+      .attr("dy", ".75em")
+      .style("font-size", "12px")
+      .text("Count");
+
+    // Create the line
+    vis.line = d3
+      .line()
+      .x((d) => vis.x(xValue(d)))
+      .y((d) => vis.y(yValue(d)));
+
+    // Append the line to the plot
     vis.svg
       .append("path")
       .datum(vis.data)
       .attr("fill", "none")
       .attr("stroke", "steelblue")
       .attr("stroke-width", 1.5)
-      .attr(
-        "d",
-        d3
-          .line()
-          .x(function (d) {
-            return x(d[vis.attribute1]);
-          })
-          .y(function (d) {
-            return y(d[vis.attribute2]);
-          })
-      );
+      .attr("d", vis.line);
+
+    // Add title
+    vis.svg
+      .append("text")
+      .attr("x", vis.width / 2)
+      .attr("y", 0 + vis.config.margin.top)
+      .attr("text-anchor", "middle")
+      .style("font-size", "16px")
+      .text("UFO Sightings by Month and Year");
   }
 
-  // //leave this empty for now...
-  renderVis() {}
+  setData(newData, attribute1, attribute2) {
+    this.attribute1 = attribute1; // MUST BE A DATE OBJECT
+    this.attribute2 = attribute2; // MUST BE A NUMBER
+
+    // convert the date object to mm/yyyy?
+
+    // assert the column is a date object
+    if (typeof newData[0][attribute1] !== "object") {
+      console.error("The column is not a date object");
+      return;
+    }
+    // assert the column is a number
+    if (typeof newData[0][attribute2] !== "number") {
+      console.error("The column is not a number");
+      return;
+    }
+
+    this.data = newData;
+  }
 }

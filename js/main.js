@@ -25,7 +25,7 @@ d3.csv("data/ufoSample.csv")
 
     // Initialize chart and then show it
     leafletMap = new LeafletMap({ parentElement: "#ufo-map" }, data);
-    line = new LineChart(
+    line = new TimeLineChart(
       { parentElement: "#ufo-timeline" },
       sightingsByMonth,
       "date",
