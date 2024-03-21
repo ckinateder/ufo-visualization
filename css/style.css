@@ -2,8 +2,19 @@
   position: absolute;
   top: 0;
   left: 0;
-  height: 70%;
-  width: 70%;
+  width: 90%;
+  height: 65%;
+  border: 1px solid #bbb;
+}
+
+#ufo-timeline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 30%;
+  width: 90%;
+  background: #fff;
+  border: 1px solid #bbb;
 }
 
 #tooltip {
@@ -20,4 +31,8 @@
   font-weight: 500;
   font-size: 13px;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+* {
+  font-family: Arial, Helvetica, sans-serif;
 }

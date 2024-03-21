@@ -7,13 +7,17 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <div id="ufo-map"></div>
-    <div id="timeline"></div>
+    <div class="vertical-stack-parent">
+      <div id="ufo-map" class="vertical-stack-child"></div>
+      <div id="ufo-timeline" class="vertical-stack-child"></div>
+    </div>
 
     <script src="js/d3.v6.min.js"></script>
     <script src="js/leaflet.js"></script>
 
+    <script src="js/util.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/line.js"></script>
     <script src="js/leafletMap.js"></script>
 
     <div id="tooltip"></div>
