@@ -98,20 +98,67 @@ class TimeLineChart {
       .style("font-size", "12px")
       .text("Count");
 
-    // Create the line
-    vis.line = d3
-      .line()
-      .x((d) => vis.x(xValue(d)))
-      .y((d) => vis.y(yValue(d)));
-
-    // Append the line to the plot
-    vis.svg
+    // Add the line using join
+    vis.line = vis.svg
       .append("path")
       .datum(vis.data)
+      .join("path")
       .attr("fill", "none")
       .attr("stroke", "steelblue")
       .attr("stroke-width", 1.5)
-      .attr("d", vis.line);
+      .attr(
+        "d",
+        d3
+          .line()
+          .x((d) => vis.x(xValue(d)))
+          .y((d) => vis.y(yValue(d)))
+      );
+
+    // Add the dots using join
+    vis.dots = vis.svg
+      .selectAll("circle")
+      .data(vis.data)
+      .join("circle")
+      .attr("fill", "steelblue")
+      .attr("r", 3)
+      .attr("cx", (d) => vis.x(xValue(d)))
+      .attr("cy", (d) => vis.y(yValue(d)));
+
+    // Add the tooltip to the dots
+    vis.dots
+      .on("mouseover", function (event, d) {
+        d3.select(this)
+          .transition()
+          .duration("50")
+          .attr("fill", "red")
+          .attr("r", 4);
+
+        let tooltipHtml = `<div class="tooltip-label"><strong>Month: </strong>${d[
+          vis.attribute1
+        ].toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                            <br><strong>Sightings: </strong>${
+                              d[vis.attribute2]
+                            }</div>`;
+
+        d3.select("#tooltip")
+          .style("opacity", 1)
+          .style("z-index", 1000000)
+          .html(tooltipHtml);
+      })
+      .on("mousemove", (event) => {
+        d3.select("#tooltip")
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY + 10 + "px");
+      })
+      .on("mouseleave", function () {
+        d3.select(this)
+          .transition()
+          .duration("150")
+          .attr("fill", "steelblue")
+          .attr("r", 2);
+
+        d3.select("#tooltip").style("opacity", 0);
+      });
 
     // Add title
     vis.svg
@@ -126,8 +173,6 @@ class TimeLineChart {
   setData(newData, attribute1, attribute2) {
     this.attribute1 = attribute1; // MUST BE A DATE OBJECT
     this.attribute2 = attribute2; // MUST BE A NUMBER
-
-    // convert the date object to mm/yyyy?
 
     // assert the column is a date object
     if (typeof newData[0][attribute1] !== "object") {
