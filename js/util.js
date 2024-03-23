@@ -75,3 +75,70 @@ function sampleDateColumnByMonthAndYear(data, column, outputColumn) {
 
   return counts;
 }
+
+function rollupDataByMonthAndYear(data, dateColumn) {
+  // we want to roll the data into an object of lists, where each list is a month and year containing all the data that have that month and year
+  /*
+    [
+        {
+            dateString: "1/2010",
+            date: new Date(2010, 0, 1),
+            count: 5,
+            data: [{}, {}, {}]
+        },
+        {
+            dateString: "2/2010",
+            date: new Date(2010, 1, 1),
+            count: 5,
+            data: [{}, {}, {}]
+        }
+        ]
+        
+    ]
+    */
+
+  let counts = [];
+
+  // loop through the data
+  data.forEach((d) => {
+    // assert the column is a date object
+    if (typeof d[dateColumn] !== "object") {
+      console.error("The column is not a date object");
+      return;
+    }
+
+    // get the month and year
+    let month = d[dateColumn].getMonth() + 1;
+    let year = d[dateColumn].getFullYear();
+    let dateString = `${month.pad()}/${year}`;
+    let netNoTime = new Date(
+      d[dateColumn].getFullYear(),
+      d[dateColumn].getMonth(),
+      1
+    );
+    // create a new object to hold the data
+    let newObject = {
+      date: netNoTime,
+      dateString: dateString,
+      count: 1,
+      data: [d],
+    };
+
+    // check if the month and year already exists in the new data
+    let exists = counts.find((element) => element.dateString == dateString);
+
+    // if it exists, increment the count
+    if (exists) {
+      exists.count++;
+      exists.data.push(d);
+    } else {
+      // otherwise, add the new object to the new data
+      counts.push(newObject);
+    }
+  });
+
+  // sort the data by date
+  counts.sort((a, b) => a.data[0][dateColumn] - b.data[0][dateColumn]);
+
+  return counts;
+}

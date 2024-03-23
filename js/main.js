@@ -22,22 +22,14 @@ d3.csv("data/ufoSample.csv")
     // initialize default time range
     timeRange = d3.extent(data, (d) => d.date_documented);
 
-    // Make array of sightings by month and year for the timeline chart
-    let sightingsByMonth = sampleDateColumnByMonthAndYear(
-      data,
-      "date_documented",
-      "date"
-    );
-
     // Initialize chart and then show it
     leafletMap = new LeafletMap({ parentElement: "#ufo-map" }, data);
 
     // Timeline chart with the sightings by month
     timeline = new TimeLineChart(
       { parentElement: "#ufo-timeline" },
-      sightingsByMonth,
-      "date",
-      "count"
+      data,
+      "date_documented"
     );
   })
 

@@ -1,5 +1,9 @@
+/**
+ * This file contains the class definition for the TimeLineChart class.
+ * This class is responsible for creating a line chart that shows a given  time series by month and year.
+ */
 class TimeLineChart {
-  constructor(_config, _data, attribute1, attribute2) {
+  constructor(_config, _data, dateColumn) {
     this.config = {
       parentElement: _config.parentElement,
       containerWidth: _config.containerWidth || 1200,
@@ -7,7 +11,7 @@ class TimeLineChart {
       margin: { top: 30, bottom: 55, right: 10, left: 50 },
     };
 
-    this.setData(_data, attribute1, attribute2);
+    this.setData(_data, dateColumn);
 
     // Call a class function
     this.initVis();
@@ -44,7 +48,7 @@ class TimeLineChart {
     // Create the scale
     vis.x = d3
       .scaleTime()
-      .domain(d3.extent(vis.data, xValue))
+      .domain(d3.extent(vis.dataByMonth, xValue))
       .range([vis.config.margin.left, vis.width - vis.config.margin.right]);
 
     // Make xAxis svg element using the x-scale.
@@ -73,7 +77,7 @@ class TimeLineChart {
     // Create the y scale
     vis.y = d3
       .scaleLinear()
-      .domain([0, d3.max(vis.data, yValue)])
+      .domain([0, d3.max(vis.dataByMonth, yValue)])
       .range([vis.height - vis.config.margin.bottom, vis.config.margin.top]);
 
     // Make yAxis svg element using the y-scale.
@@ -101,7 +105,7 @@ class TimeLineChart {
     // Add the line using join
     vis.line = vis.svg
       .append("path")
-      .datum(vis.data)
+      .datum(vis.dataByMonth)
       .join("path")
       .attr("fill", "none")
       .attr("stroke", "steelblue")
@@ -117,7 +121,7 @@ class TimeLineChart {
     // Add the dots using join
     vis.dots = vis.svg
       .selectAll("circle")
-      .data(vis.data)
+      .data(vis.dataByMonth)
       .join("circle")
       .attr("fill", "steelblue")
       .attr("r", 3)
@@ -140,7 +144,7 @@ class TimeLineChart {
         let x1 = event.selection[1];
 
         // get the lowest and highest value in the selected range
-        let selectedData = vis.data.filter(
+        let selectedData = vis.dataByMonth.filter(
           (d) => vis.x(xValue(d)) >= x0 && vis.x(xValue(d)) <= x1
         );
         timeRange = d3.extent(selectedData, xValue);
@@ -196,21 +200,16 @@ class TimeLineChart {
       .text("UFO Sightings by Month and Year");
   }
 
-  setData(newData, attribute1, attribute2) {
-    this.attribute1 = attribute1; // MUST BE A DATE OBJECT
-    this.attribute2 = attribute2; // MUST BE A NUMBER
-
+  setData(newData, dateColumn) {
+    // samples the data by month and year
     // assert the column is a date object
-    if (typeof newData[0][attribute1] !== "object") {
+    if (typeof newData[0][dateColumn] !== "object") {
       console.error("The column is not a date object");
       return;
     }
-    // assert the column is a number
-    if (typeof newData[0][attribute2] !== "number") {
-      console.error("The column is not a number");
-      return;
-    }
-
-    this.data = newData;
+    this.dateColumn = dateColumn; // MUST BE A DATE OBJECT
+    this.dataByMonth = rollupDataByMonthAndYear(newData, dateColumn); // rollup the data by month and year
+    this.attribute1 = "date"; // the attribute for the x-axis
+    this.attribute2 = "count"; // the attribute for the y-axis
   }
 }
