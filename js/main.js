@@ -1,3 +1,8 @@
+let leafletMap, timeline, timeRange;
+/**
+ * timeRange is a global variable that holds the range of dates that the user has selected.
+ */
+
 d3.csv("data/ufoSample.csv")
   .then((data) => {
     console.log(`decoding ${data.length} rows`);
@@ -14,6 +19,9 @@ d3.csv("data/ufoSample.csv")
       d.date_documented = new Date(d.date_documented);
     });
 
+    // initialize default time range
+    timeRange = d3.extent(data, (d) => d.date_documented);
+
     // Make array of sightings by month and year for the timeline chart
     let sightingsByMonth = sampleDateColumnByMonthAndYear(
       data,
@@ -25,7 +33,7 @@ d3.csv("data/ufoSample.csv")
     leafletMap = new LeafletMap({ parentElement: "#ufo-map" }, data);
 
     // Timeline chart with the sightings by month
-    line = new TimeLineChart(
+    timeline = new TimeLineChart(
       { parentElement: "#ufo-timeline" },
       sightingsByMonth,
       "date",
@@ -34,3 +42,5 @@ d3.csv("data/ufoSample.csv")
   })
 
   .catch((error) => console.error(error));
+
+function updateAll() {}

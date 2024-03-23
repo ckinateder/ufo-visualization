@@ -124,6 +124,32 @@ class TimeLineChart {
       .attr("cx", (d) => vis.x(xValue(d)))
       .attr("cy", (d) => vis.y(yValue(d)));
 
+    // add brush
+    vis.brush = d3
+      .brushX()
+      .extent([
+        [vis.config.margin.left, vis.config.margin.top],
+        [
+          vis.width - vis.config.margin.right,
+          vis.height - vis.config.margin.bottom,
+        ],
+      ])
+      .on("brush", (event) => {
+        // get the selected range
+        let x0 = event.selection[0];
+        let x1 = event.selection[1];
+
+        // get the lowest and highest value in the selected range
+        let selectedData = vis.data.filter(
+          (d) => vis.x(xValue(d)) >= x0 && vis.x(xValue(d)) <= x1
+        );
+        timeRange = d3.extent(selectedData, xValue);
+        console.log(timeRange);
+      })
+      .on("end", (event) => {});
+
+    vis.svg.append("g").attr("class", "brush").call(vis.brush);
+
     // Add the tooltip to the dots
     vis.dots
       .on("mouseover", function (event, d) {
