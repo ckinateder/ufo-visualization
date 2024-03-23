@@ -133,6 +133,18 @@ class LeafletMap {
         (d) => vis.theMap.latLngToLayerPoint([d.latitude, d.longitude]).y
       )
       .attr("r", vis.radiusSize);
+
+    // only show dots if within timeRange
+    vis.Dots.attr("display", (d) => {
+      if (
+        d.date_documented >= timeRange[0] &&
+        d.date_documented <= timeRange[1]
+      ) {
+        return "block";
+      } else {
+        return "none";
+      }
+    });
   }
 
   renderVis() {

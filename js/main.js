@@ -1,4 +1,4 @@
-let leafletMap, timeline, timeRange;
+let leafletMap, timeline, timeRange, globalData, defaultData, defaultTimeRange;
 /**
  * timeRange is a global variable that holds the range of dates that the user has selected.
  */
@@ -18,9 +18,15 @@ d3.csv("data/ufoSample.csv")
       d.longitude = +d.longitude; //make sure these are not strings
       d.date_documented = new Date(d.date_documented);
     });
+    //set the global data variable
+    globalData = data;
+
+    //set the default data variable by copying
+    defaultData = JSON.parse(JSON.stringify(data));
 
     // initialize default time range
-    timeRange = d3.extent(data, (d) => d.date_documented);
+    defaultTimeRange = d3.extent(data, (d) => d.date_documented);
+    timeRange = defaultTimeRange;
 
     // Initialize chart and then show it
     leafletMap = new LeafletMap({ parentElement: "#ufo-map" }, data);
@@ -34,5 +40,9 @@ d3.csv("data/ufoSample.csv")
   })
 
   .catch((error) => console.error(error));
+
+function updateLeafletMap() {
+  leafletMap.updateVis();
+}
 
 function updateAll() {}

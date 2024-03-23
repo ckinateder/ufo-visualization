@@ -142,3 +142,10 @@ function rollupDataByMonthAndYear(data, dateColumn) {
 
   return counts;
 }
+
+function filterDataByDateRange(data, dateColumn, range) {
+  // filter the data by a date range
+  return data.filter(
+    (d) => d[dateColumn] >= range[0] && d[dateColumn] <= range[1]
+  );
+}

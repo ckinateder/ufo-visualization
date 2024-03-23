@@ -45,6 +45,38 @@ class TimeLineChart {
     let xValue = (d) => d[vis.attribute1];
     let yValue = (d) => d[vis.attribute2];
 
+    // add brush
+    vis.brush = d3
+      .brushX()
+      .extent([
+        [vis.config.margin.left, vis.config.margin.top],
+        [
+          vis.width - vis.config.margin.right,
+          vis.height - vis.config.margin.bottom,
+        ],
+      ])
+      .on("brush", (event) => {
+        // get the selected range
+        let x0 = event.selection[0];
+        let x1 = event.selection[1];
+
+        // get the lowest and highest value in the selected range
+        let selectedData = vis.dataByMonth.filter(
+          (d) => vis.x(xValue(d)) >= x0 && vis.x(xValue(d)) <= x1
+        );
+        timeRange = d3.extent(selectedData, xValue); // update the time range
+        updateLeafletMap(); // update the leaflet map
+      })
+      .on("end", (event) => {
+        if (!event.selection) {
+          // if selection is empty, reset the time range
+          timeRange = defaultTimeRange; // reset the time range
+          updateLeafletMap(); // update the leaflet map
+        }
+      });
+
+    vis.svg.append("g").attr("class", "brush").call(vis.brush);
+
     // Create the scale
     vis.x = d3
       .scaleTime()
@@ -102,6 +134,16 @@ class TimeLineChart {
       .style("font-size", "12px")
       .text("Count");
 
+    // Add the dots using join
+    vis.dots = vis.svg
+      .selectAll("circle")
+      .data(vis.dataByMonth)
+      .join("circle")
+      .attr("fill", "steelblue")
+      .attr("r", 3.5)
+      .attr("cx", (d) => vis.x(xValue(d)))
+      .attr("cy", (d) => vis.y(yValue(d)));
+
     // Add the line using join
     vis.line = vis.svg
       .append("path")
@@ -117,42 +159,6 @@ class TimeLineChart {
           .x((d) => vis.x(xValue(d)))
           .y((d) => vis.y(yValue(d)))
       );
-
-    // Add the dots using join
-    vis.dots = vis.svg
-      .selectAll("circle")
-      .data(vis.dataByMonth)
-      .join("circle")
-      .attr("fill", "steelblue")
-      .attr("r", 3)
-      .attr("cx", (d) => vis.x(xValue(d)))
-      .attr("cy", (d) => vis.y(yValue(d)));
-
-    // add brush
-    vis.brush = d3
-      .brushX()
-      .extent([
-        [vis.config.margin.left, vis.config.margin.top],
-        [
-          vis.width - vis.config.margin.right,
-          vis.height - vis.config.margin.bottom,
-        ],
-      ])
-      .on("brush", (event) => {
-        // get the selected range
-        let x0 = event.selection[0];
-        let x1 = event.selection[1];
-
-        // get the lowest and highest value in the selected range
-        let selectedData = vis.dataByMonth.filter(
-          (d) => vis.x(xValue(d)) >= x0 && vis.x(xValue(d)) <= x1
-        );
-        timeRange = d3.extent(selectedData, xValue);
-        console.log(timeRange);
-      })
-      .on("end", (event) => {});
-
-    vis.svg.append("g").attr("class", "brush").call(vis.brush);
 
     // Add the tooltip to the dots
     vis.dots
