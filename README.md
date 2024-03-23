@@ -1,1 +1,3 @@
-# Interactive Map with Leaflet
+# UFO Project
+
+![view](img/anim.gif)
