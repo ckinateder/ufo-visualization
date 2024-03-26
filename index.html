@@ -7,10 +7,18 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
+    <div class="controls">
+      <!-- dropdown for coloring -->
+      <span>
+        Coloring:
+        <select id="coloring"></select
+      ></span>
+    </div>
     <div class="vertical-stack-parent">
       <div id="ufo-map" class="vertical-stack-child"></div>
       <div id="ufo-timeline" class="vertical-stack-child"></div>
     </div>
+    <div id="colorscale-visualizer"></div>
 
     <script src="js/d3.v6.min.js"></script>
     <script src="js/leaflet.js"></script>

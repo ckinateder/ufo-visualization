@@ -149,3 +149,17 @@ function filterDataByDateRange(data, dateColumn, range) {
     (d) => d[dateColumn] >= range[0] && d[dateColumn] <= range[1]
   );
 }
+
+function convertTimeOfDay(dateTime) {
+  // get the hour of the day
+  let hour = dateTime.getHours();
+  if (hour >= 5 && hour < 12) {
+    return "morning";
+  } else if (hour >= 12 && hour < 17) {
+    return "afternoon";
+  } else if (hour >= 17 && hour < 21) {
+    return "evening";
+  } else {
+    return "night";
+  }
+}

@@ -1,7 +1,16 @@
-let leafletMap, timeline, timeRange, globalData, defaultData, defaultTimeRange;
+let leafletMap,
+  timeline,
+  timeRange,
+  globalData,
+  defaultData,
+  defaultTimeRange,
+  coloring;
 /**
  * timeRange is a global variable that holds the range of dates that the user has selected.
  */
+
+const colorByOptions = ["year", "month", "time", "shape"];
+const defaultColoring = "year";
 
 d3.csv("data/ufoSample.csv")
   .then((data) => {
@@ -17,6 +26,9 @@ d3.csv("data/ufoSample.csv")
       d.latitude = +d.latitude; //make sure these are not strings
       d.longitude = +d.longitude; //make sure these are not strings
       d.date_documented = new Date(d.date_documented);
+      d.date_time = new Date(d.date_time);
+      d.time_of_day = convertTimeOfDay(d.date_time);
+      d.shape = replaceCodedChar(d.ufo_shape);
     });
     //set the global data variable
     globalData = data;
@@ -25,7 +37,7 @@ d3.csv("data/ufoSample.csv")
     defaultData = JSON.parse(JSON.stringify(data));
 
     // initialize default time range
-    defaultTimeRange = d3.extent(data, (d) => d.date_documented);
+    defaultTimeRange = d3.extent(data, (d) => d.date_time);
     timeRange = defaultTimeRange;
 
     // Initialize chart and then show it
@@ -39,11 +51,34 @@ d3.csv("data/ufoSample.csv")
         containerHeight: 500,
       },
       data,
-      "date_documented"
+      "date_time"
     );
+
+    // SETTING UP THE CONTROL PANEL
+
+    // fill coloring dropdown
+    d3.select("#coloring")
+      .selectAll("option")
+      .data(colorByOptions)
+      .enter()
+      .append("option")
+      .text((d) => d);
+    coloring = defaultColoring;
+    d3.select("#coloring").property("value", defaultColoring);
+    updateColoring();
   })
 
   .catch((error) => console.error(error));
+
+d3.select("#coloring").on("change", function () {
+  coloring = d3.select(this).property("value");
+  updateColoring();
+});
+
+function updateColoring() {
+  leafletMap.setColoring(coloring);
+  leafletMap.updateVis();
+}
 
 function updateLeafletMap() {
   leafletMap.updateVis();

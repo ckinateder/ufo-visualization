@@ -41,12 +41,15 @@ class LeafletMap {
     vis.overlay = d3.select(vis.theMap.getPanes().overlayPane);
     vis.svg = vis.overlay.select("svg").attr("pointer-events", "auto");
 
+    // color scale for the points
+    vis.setColoring(defaultColoring);
+
     //these are the city locations, displayed as a set of dots
     vis.Dots = vis.svg
       .selectAll("circle")
       .data(vis.data)
       .join("circle")
-      .attr("fill", "steelblue")
+      .attr("fill", vis.colorScaleFunction)
       .attr("stroke", "black")
       //Leaflet has to take control of projecting points. Here we are feeding the latitude and longitude coordinates to
       //leaflet so that it can project them on the coordinates of the view. Notice, we have to reverse lat and lon.
@@ -68,8 +71,25 @@ class LeafletMap {
           .attr("fill", "red") //change the fill
           .attr("r", 4); //change radius
 
-        let tooltipHtml = `<div class="tooltip-label"><strong>City: </strong>${d.city}, ${d.state}, ${d.country}
-                            <br><strong>Encounter: </strong>"${d.description}"</div>`;
+        //create the tooltip
+        let dateTimeString =
+          d.date_time.toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          }) +
+          " " +
+          d.date_time.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "numeric",
+          });
+        let cityString = d.city + ", " + d.state + ", " + d.country;
+
+        let tooltipHtml = `<div class="tooltip-label">
+                            <strong>Date: </strong>${dateTimeString}<br>
+                            <strong>City: </strong>${cityString}<br>
+                            <strong>Shape: </strong>${d.shape}<br>
+                            <strong>Encounter: </strong>"${d.description}"</div>`;
 
         //create a tool tip
         d3.select("#tooltip")
@@ -89,7 +109,7 @@ class LeafletMap {
         d3.select(this)
           .transition() //D3 selects the object we have moused over in order to perform operations on it
           .duration("150") //how long we are transitioning between the two states (works like keyframes)
-          .attr("fill", "steelblue") //change the fill
+          .attr("fill", vis.colorScaleFunction) //change the fill
           .attr("r", 3); //change radius
 
         d3.select("#tooltip").style("opacity", 0); //turn off the tooltip
@@ -132,19 +152,64 @@ class LeafletMap {
         "cy",
         (d) => vis.theMap.latLngToLayerPoint([d.latitude, d.longitude]).y
       )
-      .attr("r", vis.radiusSize);
+      .attr("r", vis.radiusSize)
+      .attr("fill", vis.colorScaleFunction);
 
     // only show dots if within timeRange
     vis.Dots.attr("display", (d) => {
-      if (
-        d.date_documented >= timeRange[0] &&
-        d.date_documented <= timeRange[1]
-      ) {
+      if (d.date_time >= timeRange[0] && d.date_time <= timeRange[1]) {
         return "block";
       } else {
         return "none";
       }
     });
+  }
+
+  setColoring(coloring) {
+    let vis = this;
+    // assert that the coloring is a valid column in colorByOptions
+    if (!colorByOptions.includes(coloring)) {
+      console.error("Invalid coloring column");
+      return;
+    }
+
+    // make a color scale based on the colorByOption
+    if (coloring === "month") {
+      // january, february, march, etc.
+      this.colorBy = (d) => d.date_time.getMonth();
+      this.colorScale = d3
+        .scaleSequential()
+        .domain(d3.extent(this.data, this.colorBy))
+        .interpolator(d3.interpolateViridis);
+    } else if (coloring === "time") {
+      // morning, afternoon, evening, night
+      this.colorBy = (d) => d.time_of_day;
+      this.colorScale = d3
+        .scaleOrdinal()
+        .domain(["morning", "afternoon", "evening", "night"])
+        .range(["#BFE1B0", "#39A96B", "#137177", "#0A2F51"]);
+    } else if (coloring === "shape") {
+      // oval, triangle, circle, etc.
+      this.colorBy = (d) => d.shape;
+      this.colorScale = d3
+        .scaleOrdinal()
+        .domain(
+          this.data
+            .map((d) => d.shape)
+            .filter((value, index, self) => {
+              return self.indexOf(value) === index;
+            })
+        )
+        .range(d3.schemeCategory10);
+    } else {
+      // default to year
+      this.colorBy = (d) => d.date_time.getFullYear();
+      this.colorScale = d3
+        .scaleSequential()
+        .domain(d3.extent(this.data, this.colorBy))
+        .interpolator(d3.interpolateViridis);
+    }
+    this.colorScaleFunction = (d) => vis.colorScale(vis.colorBy(d));
   }
 
   renderVis() {
