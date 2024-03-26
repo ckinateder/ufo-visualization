@@ -185,12 +185,12 @@ class LeafletMap {
         .domain(d3.extent(this.data, this.colorBy))
         .interpolator(d3.interpolateViridis);
     } else if (coloring === "time") {
-      // morning, afternoon, evening, night
-      this.colorBy = (d) => d.time_of_day;
+      // color by hour of the day
+      this.colorBy = (d) => d.date_time.getHours();
       this.colorScale = d3
-        .scaleOrdinal()
-        .domain(["morning", "afternoon", "evening", "night"])
-        .range(["#BFE1B0", "#39A96B", "#137177", "#0A2F51"]);
+        .scaleSequential()
+        .domain(d3.extent(this.data, this.colorBy))
+        .interpolator(d3.interpolateViridis);
     } else if (coloring === "shape") {
       // oval, triangle, circle, etc.
       this.colorBy = (d) => d.shape;
