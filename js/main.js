@@ -21,21 +21,20 @@ d3.csv("data/ufo_sightings.csv")
     filteredData = [];
 
     data.forEach((d) => {
-      let point = {};
-      point.city = replaceCodedChar(d.city_area);
-      point.state = replaceCodedChar(d.state.toUpperCase());
-      point.country = replaceCodedChar(d.country.toUpperCase());
-      point.described_encounter_length = replaceCodedChar(
-        d.described_encounter_length
-      );
-      point.description = replaceCodedChar(d.description);
-      point.latitude = +d.latitude; //make sure these are not strings
-      point.longitude = +d.longitude; //make sure these are not strings
-      point.date_documented = new Date(d.date_documented);
-      point.date_time = new Date(d.date_time);
-      point.time_of_day = convertTimeOfDay(point.date_time);
-      point.shape = replaceCodedChar(d.ufo_shape);
-      filteredData.push(point);
+      filteredData.push({
+        city: replaceCodedChar(d.city_area),
+        state: replaceCodedChar(d.state.toUpperCase()),
+        country: replaceCodedChar(d.country.toUpperCase()),
+        described_encounter_length: replaceCodedChar(
+          d.described_encounter_length
+        ),
+        description: replaceCodedChar(d.description),
+        latitude: +d.latitude,
+        longitude: +d.longitude,
+        date_documented: new Date(d.date_documented),
+        date_time: new Date(d.date_time),
+        shape: replaceCodedChar(d.ufo_shape),
+      });
     });
     //set the global data variable
 

@@ -9,6 +9,8 @@ class LeafletMap {
       parentElement: _config.parentElement,
     };
     this.data = _data;
+    this.radiusSize = 3;
+
     this.initVis();
   }
 
@@ -65,7 +67,7 @@ class LeafletMap {
         "cy",
         (d) => vis.theMap.latLngToLayerPoint([d.latitude, d.longitude]).y
       )
-      .attr("r", 3)
+      .attr("r", vis.radiusSize)
       .on("mouseover", function (event, d) {
         //function to add mouseover event
         d3.select(this)
@@ -113,7 +115,7 @@ class LeafletMap {
           .transition() //D3 selects the object we have moused over in order to perform operations on it
           .duration("150") //how long we are transitioning between the two states (works like keyframes)
           .attr("fill", vis.colorScaleFunction) //change the fill
-          .attr("r", 3); //change radius
+          .attr("r", vis.radiusSize); //change radius
 
         d3.select("#tooltip").style("opacity", 0); //turn off the tooltip
       })
@@ -138,7 +140,6 @@ class LeafletMap {
     // console.log(vis.map.getZoom()); //how zoomed am I
 
     //want to control the size of the radius to be a certain number of meters?
-    vis.radiusSize = 3;
 
     // if( vis.theMap.getZoom > 15 ){
     //   metresPerPixel = 40075016.686 * Math.abs(Math.cos(map.getCenter().lat * Math.PI/180)) / Math.pow(2, map.getZoom()+8);

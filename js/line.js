@@ -227,7 +227,9 @@ class TimeLineChart {
       return;
     }
     this.dateColumn = dateColumn; // MUST BE A DATE OBJECT
-    this.dataByMonth = rollupDataByMonthAndYear(newData, dateColumn); // rollup the data by month and year
+
+    // passing true to the function will return only the counts
+    this.dataByMonth = rollupDataByMonthAndYear(newData, dateColumn, false); // rollup the data by month and year
     this.attribute1 = "date"; // the attribute for the x-axis
     this.attribute2 = "count"; // the attribute for the y-axis
   }

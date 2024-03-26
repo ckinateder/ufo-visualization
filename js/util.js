@@ -31,6 +31,7 @@ Number.prototype.pad = function (size) {
   }
   return s;
 };
+
 function sampleDateColumnByMonthAndYear(data, column, outputColumn) {
   // this assumes that the column is a date object
   // we want to roll up the data by month and year, like jan 2010, feb 2010, etc.
@@ -76,25 +77,27 @@ function sampleDateColumnByMonthAndYear(data, column, outputColumn) {
   return counts;
 }
 
-function rollupDataByMonthAndYear(data, dateColumn) {
+function rollupDataByMonthAndYear(data, dateColumn, justCounts) {
   // we want to roll the data into an object of lists, where each list is a month and year containing all the data that have that month and year
   /*
+    If justCounts is false, the data will look like this:
     [
         {
             dateString: "1/2010",
             date: new Date(2010, 0, 1),
-            count: 5,
-            data: [{}, {}, {}]
+            count: 3,
+            <data: [{}, {}, {}]>
         },
         {
             dateString: "2/2010",
             date: new Date(2010, 1, 1),
             count: 5,
-            data: [{}, {}, {}]
+            <data: [{}, {}, {}, {}, {}]>
         }
         ]
         
     ]
+    If justCounts is true, the `data` attribute will not be included in the object.
     */
 
   let counts = [];
@@ -121,8 +124,10 @@ function rollupDataByMonthAndYear(data, dateColumn) {
       date: netNoTime,
       dateString: dateString,
       count: 1,
-      data: [d],
     };
+    if (!justCounts) {
+      newObject.data = [d];
+    }
 
     // check if the month and year already exists in the new data
     let exists = counts.find((element) => element.dateString == dateString);
@@ -130,7 +135,8 @@ function rollupDataByMonthAndYear(data, dateColumn) {
     // if it exists, increment the count
     if (exists) {
       exists.count++;
-      exists.data.push(d);
+      // if we are not just counting, add the data to the existing object
+      if (!justCounts) exists.data.push(d);
     } else {
       // otherwise, add the new object to the new data
       counts.push(newObject);
@@ -138,7 +144,7 @@ function rollupDataByMonthAndYear(data, dateColumn) {
   });
 
   // sort the data by date
-  counts.sort((a, b) => a.data[0][dateColumn] - b.data[0][dateColumn]);
+  counts.sort((a, b) => a.date - b.date);
 
   return counts;
 }
@@ -148,18 +154,4 @@ function filterDataByDateRange(data, dateColumn, range) {
   return data.filter(
     (d) => d[dateColumn] >= range[0] && d[dateColumn] <= range[1]
   );
-}
-
-function convertTimeOfDay(dateTime) {
-  // get the hour of the day
-  let hour = dateTime.getHours();
-  if (hour >= 5 && hour < 12) {
-    return "morning";
-  } else if (hour >= 12 && hour < 17) {
-    return "afternoon";
-  } else if (hour >= 17 && hour < 21) {
-    return "evening";
-  } else {
-    return "night";
-  }
 }
