@@ -44,6 +44,9 @@ class LeafletMap {
     // color scale for the points
     vis.setColoring(defaultColoring);
 
+    // filter out any points that don't have a lat/lon
+    vis.data = vis.data.filter((d) => d.latitude && d.longitude);
+
     //these are the city locations, displayed as a set of dots
     vis.Dots = vis.svg
       .selectAll("circle")

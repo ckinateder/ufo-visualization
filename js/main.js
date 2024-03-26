@@ -4,7 +4,9 @@ let leafletMap,
   globalData,
   defaultData,
   defaultTimeRange,
-  coloring;
+  coloring,
+  filteredData,
+  incompleteDat;
 /**
  * timeRange is a global variable that holds the range of dates that the user has selected.
  */
@@ -12,36 +14,40 @@ let leafletMap,
 const colorByOptions = ["year", "month", "time", "shape"];
 const defaultColoring = "year";
 
-d3.csv("data/ufoSample.csv")
+d3.csv("data/ufo_sightings.csv")
   .then((data) => {
     console.log(`decoding ${data.length} rows`);
+
+    filteredData = [];
+
     data.forEach((d) => {
-      d.city = replaceCodedChar(d.city_area);
-      d.state = replaceCodedChar(d.state.toUpperCase());
-      d.country = replaceCodedChar(d.country.toUpperCase());
-      d.described_encounter_length = replaceCodedChar(
+      let point = {};
+      point.city = replaceCodedChar(d.city_area);
+      point.state = replaceCodedChar(d.state.toUpperCase());
+      point.country = replaceCodedChar(d.country.toUpperCase());
+      point.described_encounter_length = replaceCodedChar(
         d.described_encounter_length
       );
-      d.description = replaceCodedChar(d.description);
-      d.latitude = +d.latitude; //make sure these are not strings
-      d.longitude = +d.longitude; //make sure these are not strings
-      d.date_documented = new Date(d.date_documented);
-      d.date_time = new Date(d.date_time);
-      d.time_of_day = convertTimeOfDay(d.date_time);
-      d.shape = replaceCodedChar(d.ufo_shape);
+      point.description = replaceCodedChar(d.description);
+      point.latitude = +d.latitude; //make sure these are not strings
+      point.longitude = +d.longitude; //make sure these are not strings
+      point.date_documented = new Date(d.date_documented);
+      point.date_time = new Date(d.date_time);
+      point.time_of_day = convertTimeOfDay(point.date_time);
+      point.shape = replaceCodedChar(d.ufo_shape);
+      filteredData.push(point);
     });
     //set the global data variable
-    globalData = data;
 
     //set the default data variable by copying
-    defaultData = JSON.parse(JSON.stringify(data));
+    defaultData = JSON.parse(JSON.stringify(filteredData));
 
     // initialize default time range
-    defaultTimeRange = d3.extent(data, (d) => d.date_time);
+    defaultTimeRange = d3.extent(filteredData, (d) => d.date_time);
     timeRange = defaultTimeRange;
 
     // Initialize chart and then show it
-    leafletMap = new LeafletMap({ parentElement: "#ufo-map" }, data);
+    leafletMap = new LeafletMap({ parentElement: "#ufo-map" }, filteredData);
 
     // Timeline chart with the sightings by month
     timeline = new TimeLineChart(
@@ -50,7 +56,7 @@ d3.csv("data/ufoSample.csv")
         containerWidth: 1200,
         containerHeight: 500,
       },
-      data,
+      filteredData,
       "date_time"
     );
 

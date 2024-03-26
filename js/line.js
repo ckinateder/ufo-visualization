@@ -56,6 +56,7 @@ class TimeLineChart {
         ],
       ])
       .on("brush", (event) => {
+        /* // removed for memory
         // get the selected range
         let x0 = event.selection[0];
         let x1 = event.selection[1];
@@ -66,11 +67,23 @@ class TimeLineChart {
         );
         timeRange = d3.extent(selectedData, xValue); // update the time range
         updateLeafletMap(); // update the leaflet map
+        */
       })
       .on("end", (event) => {
         if (!event.selection) {
           // if selection is empty, reset the time range
           timeRange = defaultTimeRange; // reset the time range
+          updateLeafletMap(); // update the leaflet map
+        } else {
+          // get the selected range
+          let x0 = event.selection[0];
+          let x1 = event.selection[1];
+
+          // get the lowest and highest value in the selected range
+          let selectedData = vis.dataByMonth.filter(
+            (d) => vis.x(xValue(d)) >= x0 && vis.x(xValue(d)) <= x1
+          );
+          timeRange = d3.extent(selectedData, xValue); // update the time range
           updateLeafletMap(); // update the leaflet map
         }
       });
