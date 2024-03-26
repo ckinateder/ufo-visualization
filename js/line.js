@@ -8,7 +8,7 @@ class TimeLineChart {
       parentElement: _config.parentElement,
       containerWidth: _config.containerWidth || 1200,
       containerHeight: _config.containerHeight || 500,
-      margin: { top: 30, bottom: 55, right: 10, left: 50 },
+      margin: { top: 50, bottom: 55, right: 10, left: 50 },
     };
 
     this.setData(_data, dateColumn);
@@ -200,7 +200,7 @@ class TimeLineChart {
     vis.svg
       .append("text")
       .attr("x", vis.width / 2)
-      .attr("y", 0 + vis.config.margin.top)
+      .attr("y", 0 + vis.config.margin.top - 10)
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
       .text("UFO Sightings by Month and Year");

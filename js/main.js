@@ -33,7 +33,11 @@ d3.csv("data/ufoSample.csv")
 
     // Timeline chart with the sightings by month
     timeline = new TimeLineChart(
-      { parentElement: "#ufo-timeline" },
+      {
+        parentElement: "#ufo-timeline",
+        containerWidth: 1200,
+        containerHeight: 500,
+      },
       data,
       "date_documented"
     );
