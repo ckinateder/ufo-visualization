@@ -1,5 +1,6 @@
 let leafletMap,
   timeline,
+  hourChart,
   timeRange,
   globalData,
   defaultData,
@@ -36,6 +37,13 @@ d3.csv("data/ufo_sightings.csv")
         shape: replaceCodedChar(d.ufo_shape),
       });
     });
+
+    // random sample of a test set - CHANGE THIS TO THE FULL DATASET
+    let dataSize = 1000;
+    filteredData = filteredData
+      .sort(() => Math.random() - Math.random())
+      .slice(0, dataSize);
+
     //set the global data variable
 
     //set the default data variable by copying
@@ -57,6 +65,20 @@ d3.csv("data/ufo_sightings.csv")
       },
       filteredData,
       "date_time"
+    );
+
+    // Hour chart with the sightings by hour
+    let hourGetter = (d) => d.date_time.getHours();
+    hourChart = new HistogramChart(
+      {
+        parentElement: "#ufo-hour-trends",
+        title: "Sightings by Hour",
+        containerWidth: 1200,
+        containerHeight: 500,
+        numBins: 24,
+      },
+      filteredData,
+      hourGetter
     );
 
     // SETTING UP THE CONTROL PANEL

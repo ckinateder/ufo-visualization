@@ -153,6 +153,7 @@ class TimeLineChart {
       .data(vis.dataByMonth)
       .join("circle")
       .attr("fill", "steelblue")
+
       .attr("r", 3.5)
       .attr("cx", (d) => vis.x(xValue(d)))
       .attr("cy", (d) => vis.y(yValue(d)));

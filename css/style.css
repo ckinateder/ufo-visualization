@@ -1,13 +1,19 @@
 #ufo-map {
-  width: 1200px;
   height: 600px;
-  border: #333 1px solid;
 }
-#ufo-timeline {
+/*A-VIEW is for the main map and timeline*/
+.a-view {
   width: 1200px;
   height: fit-content;
   border: #333 1px solid;
 }
+/*B-VIEW is for the trends and supplemental views*/
+.b-view {
+  width: 1200px;
+  height: fit-content;
+  border: #333 1px solid;
+}
+
 #tooltip {
   position: absolute;
   opacity: 0;
