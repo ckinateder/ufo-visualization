@@ -72,7 +72,7 @@ class TimeLineChart {
       .on("end", (event) => {
         if (!event.selection) {
           // if selection is empty, reset the time range
-          timeRange = defaultTimeRange; // reset the time range
+          timeRange = []; // reset the time range
           updateLeafletMap(); // update the leaflet map
         } else {
           // get the selected range
@@ -153,8 +153,7 @@ class TimeLineChart {
       .data(vis.dataByMonth)
       .join("circle")
       .attr("fill", "steelblue")
-
-      .attr("r", 3.5)
+      .attr("r", 2)
       .attr("cx", (d) => vis.x(xValue(d)))
       .attr("cy", (d) => vis.y(yValue(d)));
 

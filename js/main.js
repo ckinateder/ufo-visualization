@@ -4,7 +4,6 @@ let leafletMap,
   timeRange,
   globalData,
   defaultData,
-  defaultTimeRange,
   coloring,
   filteredData,
   incompleteDat;
@@ -51,8 +50,7 @@ d3.csv("data/ufo_sightings.csv")
     defaultData = JSON.parse(JSON.stringify(filteredData));
 
     // initialize default time range
-    defaultTimeRange = d3.extent(filteredData, (d) => d.date_time);
-    timeRange = defaultTimeRange;
+    timeRange = [];
 
     // Initialize chart and then show it
     leafletMap = new LeafletMap({ parentElement: "#ufo-map" }, filteredData);

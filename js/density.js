@@ -62,7 +62,6 @@ class DensityChart {
     // Plot the area
     vis.curve = vis.svg
       .append("path")
-      .attr("class", "mypath")
       .datum(density)
       .attr("fill", "#69b3a2")
       .attr("opacity", ".8")
