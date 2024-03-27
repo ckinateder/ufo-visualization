@@ -39,7 +39,7 @@ d3.csv("data/ufo_sightings.csv")
     });
 
     // random sample of a test set - CHANGE THIS TO THE FULL DATASET
-    let dataSize = 20000;
+    let dataSize = data.length / 4;
     processedData = processedData
       .sort(() => Math.random() - Math.random())
       .slice(0, dataSize);
@@ -51,9 +51,10 @@ d3.csv("data/ufo_sightings.csv")
 
     // initialize default time range
     timeRange = [];
-    // data filter is constructed like {key: [min, max], key2: [min2, max2], ...}
-    // key must be a string that is a column name in the data
-    dataFilter = {};
+    // data filter is constructed like [{id: filterId, column: column, range: [min, max], transformation: function}, ...]
+    // transformation is a function that is applied to the data before filtering, but could be none
+    // this is used to filter the data with the inFilter function
+    dataFilter = [];
 
     // Initialize chart and then show it
     leafletMap = new LeafletMap({ parentElement: "#ufo-map" }, processedData);
@@ -81,7 +82,8 @@ d3.csv("data/ufo_sightings.csv")
         numBins: 24,
       },
       processedData,
-      hourGetter
+      "date_time",
+      getHours
     );
 
     // Chart with sightings by day of year
@@ -96,7 +98,8 @@ d3.csv("data/ufo_sightings.csv")
         numBins: 366,
       },
       processedData,
-      dayGetter
+      "date_time",
+      getDayOfYear
     );
 
     // Chart with sightings by encounter length
@@ -145,16 +148,51 @@ function updateLeafletMap() {
   leafletMap.updateVis();
 }
 
-function updateFilter(col, range) {
-  // ensure that the range is sorted
-  range.sort((a, b) => a - b);
-  dataFilter[col] = range;
+function updateFilter(filter) {
+  /**
+   * filter is an object with the following structure:
+   * {
+   * id: filterId,
+   * column: column,
+   * range: [min, max],
+   * transformation: function (optional)
+   * }
+   */
+  // check if filter has id, range
+  if (!filter.id || !filter.range || !filter.column) {
+    console.error("Invalid filter object");
+    return;
+  }
+
+  // if filter has no transformation, set it to identity
+  if (!filter.transformation) {
+    filter.transformation = (d) => d;
+  }
+
+  // check if the filter is already in the dataFilter
+  let index = dataFilter.findIndex((d) => d.id == filter.id);
+  if (index == -1) {
+    dataFilter.push(filter);
+  } else {
+    dataFilter[index] = filter;
+  }
+  console.log(dataFilter);
 }
 
+removeFilter = (filterId) => {
+  dataFilter = dataFilter.filter((d) => d.id != filterId);
+};
+
 function inFilter(d) {
-  for (let key in dataFilter) {
-    let range = dataFilter[key];
-    if (d[key] < range[0] || d[key] > range[1]) {
+  // apply transformations and check if the data is within the range
+  for (let i = 0; i < dataFilter.length; i++) {
+    let filter = dataFilter[i];
+    let point = d[filter.column];
+    let transformedData = filter.transformation(point);
+    if (
+      filter.range.length == 2 &&
+      (filter.range[0] > transformedData || filter.range[1] < transformedData)
+    ) {
       return false;
     }
   }

@@ -1,7 +1,7 @@
 // create a HistogramChart class
 // the getterFunction is a function that takes in a data point and returns the attribute that you want to bin
 class HistogramChart {
-  constructor(_config, _data, getterFunction) {
+  constructor(_config, _data, attribute, transformFunction) {
     this.config = {
       title: _config.title || "Histogram",
       xAxisLabel: _config.xAxisLabel || "x-axis",
@@ -14,7 +14,9 @@ class HistogramChart {
       quantileLimit: _config.quantileLimit || 0,
     };
 
-    this.setData(_data, getterFunction);
+    // make a filter id for this chart, must be unique (use date.now())
+    this.filterId = `${attribute}-filter-${Date.now()}`;
+    this.setData(_data, attribute, transformFunction);
 
     // Call a class function
     this.initVis();
@@ -67,6 +69,37 @@ class HistogramChart {
       .domain([0, d3.max(vis.bins, (d) => d.length)])
       .range([vis.height - vis.config.margin.bottom, vis.config.margin.top]);
 
+    // add brush
+    vis.brush = d3
+      .brushX()
+      .extent([
+        [vis.config.margin.left, vis.config.margin.top],
+        [
+          vis.width - vis.config.margin.right,
+          vis.height - vis.config.margin.bottom,
+        ],
+      ])
+      .on("brush", (event) => {})
+      .on("end", (event) => {
+        if (!event.selection) {
+          // if selection is empty, reset the time range
+          updateFilter({ id: vis.filterId, column: vis.attribute, range: [] }); // reset the filter
+          updateLeafletMap(); // update the leaflet map
+        } else {
+          // get the selected range
+          let x0 = event.selection[0];
+          let x1 = event.selection[1];
+          let range = [vis.x.invert(x0), vis.x.invert(x1)];
+          updateFilter({
+            id: vis.filterId,
+            column: vis.attribute,
+            transformation: vis.transformFunction,
+            range: range,
+          }); // update the filter
+          updateLeafletMap(); // update the leaflet map
+        }
+      });
+
     // we need to create a bar chart
     vis.bars = vis.svg
       .selectAll("rect")
@@ -80,7 +113,7 @@ class HistogramChart {
         (d) => vis.height - vis.config.margin.bottom - vis.y(d.length)
       )
       .attr("fill", "steelblue");
-
+    vis.svg.append("g").attr("class", "brush").call(vis.brush);
     // add tooltips
     vis.bars
       .on("mouseover", function (event, d) {
@@ -203,8 +236,10 @@ class HistogramChart {
         );
     }
   }
-  setData(newData, getterFunction) {
-    this.getterFunction = getterFunction;
+  setData(newData, attribute, transformFunction) {
+    this.getterFunction = (d) => transformFunction(d[attribute]);
+    this.transformFunction = transformFunction;
+    this.attribute = attribute;
     this.data = newData;
 
     if (this.config.quantileLimit > 0) {

@@ -254,3 +254,11 @@ function kernelEpanechnikov(k) {
     return Math.abs((v /= k)) <= 1 ? (0.75 * (1 - v * v)) / k : 0;
   };
 }
+
+function getHours(date) {
+  return date.getHours();
+}
+
+function inRange(v, range) {
+  return v >= range[0] && v <= range[1];
+}

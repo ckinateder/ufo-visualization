@@ -11,6 +11,7 @@ class TimeLineChart {
       margin: { top: 50, bottom: 55, right: 10, left: 60 },
     };
 
+    this.filterId = `${dateColumn}-filter-${Date.now()}`;
     this.dateColumn = dateColumn; // MUST BE A DATE OBJECT
     this.setData(_data, dateColumn);
 
@@ -60,18 +61,21 @@ class TimeLineChart {
       .on("end", (event) => {
         if (!event.selection) {
           // if selection is empty, reset the time range
-          updateFilter(vis.dateColumn, []);
+          updateFilter({ id: vis.filterId, column: vis.dateColumn, range: [] }); // reset the filter
           updateLeafletMap(); // update the leaflet map
         } else {
           // get the selected range
           let x0 = event.selection[0];
           let x1 = event.selection[1];
 
-          // get the lowest and highest value in the selected range
-          let selectedData = vis.dataByMonth.filter(
-            (d) => vis.x(xValue(d)) >= x0 && vis.x(xValue(d)) <= x1
-          );
-          updateFilter(vis.dateColumn, d3.extent(selectedData, xValue)); // update the filter
+          //get range
+          let range = [vis.x.invert(x0), vis.x.invert(x1)];
+
+          updateFilter({
+            id: vis.filterId,
+            column: vis.dateColumn,
+            range: range,
+          }); // update the filter
           updateLeafletMap(); // update the leaflet map
         }
       });
