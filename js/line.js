@@ -113,8 +113,8 @@ class TimeLineChart {
     vis.svg
       .append("text")
       .attr("text-anchor", "middle")
-      .attr("x", vis.config.margin.left + vis.width / 2)
-      .attr("y", vis.height - vis.config.margin.bottom / 2)
+      .attr("x", vis.width / 2)
+      .attr("y", vis.height - vis.config.margin.bottom / 2 + 5)
       .attr("id", "x-axis-label")
       .style("font-size", "12px")
       .text("Year");

@@ -3,7 +3,7 @@
 class HistogramChart {
   constructor(_config, _data, getterFunction) {
     this.config = {
-      title: _config.title || "",
+      title: _config.title || "Histogram",
       xAxisLabel: _config.xAxisLabel || "x-axis",
       yAxisLabel: "Count",
       numBins: _config.numBins || 20,
@@ -111,8 +111,8 @@ class HistogramChart {
     vis.svg
       .append("text")
       .attr("text-anchor", "middle")
-      .attr("x", vis.config.margin.left + vis.width / 2)
-      .attr("y", vis.height - vis.config.margin.bottom / 2)
+      .attr("x", vis.width / 2)
+      .attr("y", vis.height - vis.config.margin.bottom / 2 + 5)
       .attr("id", "x-axis-label")
       .style("font-size", "12px")
       .text(vis.config.xAxisLabel);
@@ -129,54 +129,6 @@ class HistogramChart {
       .style("font-size", "12px")
       .text(vis.config.yAxisLabel);
 
-    /*
-    // Make xAxis svg element using the x-scale.
-    vis.xAxis = d3.axisBottom(vis.x).ticks(10);
-
-    // Append the xAxis to the plot
-    vis.svg
-      .append("g")
-      .attr("id", "x-axis")
-      .attr(
-        "transform",
-        `translate(0, ${vis.height - vis.config.margin.bottom})`
-      )
-      .call(vis.xAxis);
-    
-    // Make yAxis svg element using the y-scale.
-    vis.yAxis = d3.axisLeft(vis.y).ticks(10).tickFormat(largeTickFormat);
-
-    // Append the yAxis to the plot
-    vis.svg
-      .append("g")
-      .attr("id", "y-axis")
-      .attr("transform", `translate(${vis.config.margin.left}, 0)`)
-      .call(vis.yAxis);
-
-
-    // Add X axis label
-    vis.svg
-      .append("text")
-      .attr("text-anchor", "middle")
-      .attr("x", vis.config.margin.left + vis.width / 2)
-      .attr("y", vis.height - vis.config.margin.bottom / 2)
-      .attr("id", "x-axis-label")
-      .style("font-size", "12px")
-      .text(vis.config.xAxisLabel);
-    
-
-    // Add Y axis label
-    vis.svg
-      .append("text")
-      .attr("text-anchor", "end")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("x", -vis.height / 2)
-      .attr("id", "y-axis-label")
-      .attr("dy", ".75em")
-      .style("font-size", "12px")
-      .text(vis.config.yAxisLabel);
-*/
     // Add title
     vis.svg
       .append("text")

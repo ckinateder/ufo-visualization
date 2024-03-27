@@ -73,6 +73,7 @@ d3.csv("data/ufo_sightings.csv")
       {
         parentElement: "#ufo-hour-trends",
         title: "Sightings by Hour",
+        xAxisLabel: "Hour",
         containerWidth: 1200,
         containerHeight: 500,
         numBins: 24,
