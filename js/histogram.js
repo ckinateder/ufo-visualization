@@ -14,6 +14,8 @@ class HistogramChart {
       quantileLimit: _config.quantileLimit || 0,
       accentColor: _config.accentColor || "#FFB400",
       normalColor: _config.normalColor || "#69b3a2",
+      yPadding: 0.1, // padding for the y-axis (percentage of the range)
+      barGap: 0.5, // gap between bars
     };
 
     // make a filter id for this chart, must be unique (use date.now())
@@ -48,43 +50,6 @@ class HistogramChart {
   updateVis() {
     let vis = this; // create svg element
 
-    // we want to create a histogram of the data
-    // we need to create a histogram function
-    vis.histogram = d3
-      .histogram()
-      .value(vis.getterFunction)
-      .domain(d3.extent(vis.data, vis.getterFunction))
-      .thresholds(vis.config.numBins);
-
-    // we need to bin the data
-    vis.bins = vis.histogram(vis.data);
-
-    // we need to create a scale for the x-axis
-    vis.x = d3
-      .scaleLinear()
-      .domain(d3.extent(vis.data, vis.getterFunction))
-      .range([vis.config.margin.left, vis.width - vis.config.margin.right]);
-
-    // we need to create a scale for the y-axis
-    vis.y = d3
-      .scaleLinear()
-      .domain([0, d3.max(vis.bins, (d) => d.length)])
-      .range([vis.height - vis.config.margin.bottom, vis.config.margin.top]);
-
-    // we need to create a bar chart
-    vis.bars = vis.svg
-      .selectAll("rect")
-      .data(vis.bins)
-      .join("rect")
-      .attr("x", (d) => vis.x(d.x0))
-      .attr("y", (d) => vis.y(d.length))
-      .attr("width", (d) => vis.x(d.x1) - vis.x(d.x0))
-      .attr(
-        "height",
-        (d) => vis.height - vis.config.margin.bottom - vis.y(d.length)
-      )
-      .attr("fill", vis.config.normalColor);
-
     // add brush
     vis.brush = d3
       .brushX()
@@ -116,10 +81,56 @@ class HistogramChart {
         }
       });
 
-    vis.brushG = vis.svg.append("g").attr("class", "brush").call(vis.brush);
+    // add brush to context
+    const brushG = vis.svg.append("g").attr("class", "brush").call(vis.brush);
+
+    // we want to create a histogram of the data
+    // we need to create a histogram function
+    vis.histogram = d3
+      .histogram()
+      .value(vis.getterFunction)
+      .domain(d3.extent(vis.data, vis.getterFunction))
+      .thresholds(vis.config.numBins);
+
+    // we need to bin the data
+    vis.bins = vis.histogram(vis.data);
+
+    // we need to create a scale for the x-axis
+    vis.x = d3
+      .scaleLinear()
+      .domain(d3.extent(vis.data, vis.getterFunction))
+      .range([vis.config.margin.left, vis.width - vis.config.margin.right]);
+
+    // we need to create a scale for the y-axis
+
+    vis.y = d3
+      .scaleLinear()
+      .domain([0, d3.max(vis.bins, (d) => d.length)])
+      .range([
+        vis.height - vis.config.margin.bottom,
+        (1 + vis.config.yPadding) * vis.config.margin.top,
+      ]);
+
+    // make a context
+    vis.context = vis.svg.append("g");
+
+    // we need to create a bar chart
+    vis.bars = vis.context
+      .selectAll("rect")
+      .data(vis.bins)
+      .join("rect")
+      .attr("x", (d) => vis.x(d.x0) + vis.config.barGap)
+      .attr("y", (d) => vis.y(d.length))
+      .attr("width", (d) => vis.x(d.x1) - vis.x(d.x0) - vis.config.barGap)
+      .attr(
+        "height",
+        (d) => vis.height - vis.config.margin.bottom - vis.y(d.length)
+      )
+      .attr("fill", vis.config.normalColor);
 
     // add tooltips
     vis.bars
+      .on("mouseover", function (event, d) {})
       .on("mousemove", function (event, d) {
         d3.select(this).attr("fill", vis.config.accentColor);
 
@@ -130,10 +141,7 @@ class HistogramChart {
           100
         ).toFixed(2)}%</div>`;
 
-        d3.select("#tooltip")
-          .style("opacity", 1)
-          .style("z-index", 1000000)
-          .html(tooltipHtml);
+        d3.select("#tooltip").style("opacity", 1).html(tooltipHtml);
         d3.select("#tooltip")
           .style("left", event.pageX + 10 + "px")
           .style("top", event.pageY + 10 + "px");
@@ -159,7 +167,7 @@ class HistogramChart {
   addAxes() {
     let vis = this;
     // Append the xAxis to the plot
-    vis.svg
+    vis.context
       .append("g")
       .attr("id", "x-axis")
       .attr(
@@ -169,14 +177,14 @@ class HistogramChart {
       .call(vis.xAxis);
 
     // Append the yAxis to the plot
-    vis.svg
+    vis.context
       .append("g")
       .attr("id", "y-axis")
       .attr("transform", `translate(${vis.config.margin.left}, 0)`)
       .call(vis.yAxis);
 
     // Add X axis label
-    vis.svg
+    vis.context
       .append("text")
       .attr("text-anchor", "middle")
       .attr("x", vis.width / 2)
@@ -186,7 +194,7 @@ class HistogramChart {
       .text(vis.config.xAxisLabel);
 
     // Add Y axis label
-    vis.svg
+    vis.context
       .append("text")
       .attr("text-anchor", "end")
       .attr("transform", "rotate(-90)")
@@ -198,7 +206,7 @@ class HistogramChart {
       .text(vis.config.yAxisLabel);
 
     // Add title
-    vis.svg
+    vis.context
       .append("text")
       .attr("x", vis.width / 2)
       .attr("y", 0 + vis.config.margin.top - 10)
@@ -227,7 +235,7 @@ class HistogramChart {
     vis.legend.append("text").attr("x", 15).attr("y", 10).text("Count");
     */
     if (vis.config.quantileLimit > 0) {
-      vis.svg
+      vis.context
         .append("text")
         .attr("x", vis.width - vis.config.margin.right)
         .attr("y", vis.height - vis.config.margin.bottom / 2 + 5)

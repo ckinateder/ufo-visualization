@@ -13,7 +13,7 @@ class TimeLineChart {
       normalColor: _config.normalColor || "#69b3a2",
     };
 
-    this.filterId = `${dateColumn}-filter-${Date.now()}`;
+    this.filterId = `${dateColumn}-filter-${Date.now().toString(16)}`;
     this.dateColumn = dateColumn; // MUST BE A DATE OBJECT
     this.setData(_data, dateColumn);
 
