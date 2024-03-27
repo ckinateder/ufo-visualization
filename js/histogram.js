@@ -50,6 +50,11 @@ class HistogramChart {
   updateVis() {
     let vis = this; // create svg element
 
+    // reset the brush area if it exists
+    if (vis.brushArea) {
+      vis.brushArea.call(vis.brush).call(vis.brush.move, null);
+    }
+
     // add brush
     vis.brush = d3
       .brushX()
@@ -82,7 +87,7 @@ class HistogramChart {
       });
 
     // add brush to context
-    const brushG = vis.svg.append("g").attr("class", "brush").call(vis.brush);
+    vis.brushArea = vis.svg.append("g").attr("class", "brush").call(vis.brush);
 
     // we want to create a histogram of the data
     // we need to create a histogram function

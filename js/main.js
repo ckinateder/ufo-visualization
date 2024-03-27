@@ -39,7 +39,7 @@ d3.csv("data/ufo_sightings.csv")
     });
 
     // random sample of a test set - CHANGE THIS TO THE FULL DATASET
-    let dataSize = data.length / 4;
+    let dataSize = data.length / 3;
     processedData = processedData
       .sort(() => Math.random() - Math.random())
       .slice(0, dataSize);
@@ -178,6 +178,8 @@ function updateFilter(filter) {
   }
   console.log(`Updated filter '${filter.id}'`);
   console.log(dataFilter);
+
+  // TODO - html element with showing the filters applied
 }
 
 removeFilter = (filterId) => {
@@ -202,4 +204,25 @@ function inFilter(d) {
   return true;
 }
 
-function updateAll() {}
+d3.select("#reset").on("click", resetAll);
+
+function resetAll() {
+  // reset the data
+  processedData = JSON.parse(JSON.stringify(defaultData));
+  // reset the filters
+  dataFilter = [];
+  // reset the coloring
+  coloring = defaultColoring;
+  d3.select("#coloring").property("value", defaultColoring);
+  updateColoring();
+
+  // update the visualizations
+  updateAll();
+}
+
+function updateAll() {
+  updateLeafletMap();
+  for (let chart of [timeline, hourChart, dayChart, encounterLengthChart]) {
+    chart.updateVis();
+  }
+}

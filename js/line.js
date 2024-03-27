@@ -49,6 +49,11 @@ class TimeLineChart {
     let xValue = (d) => d[vis.attribute1];
     let yValue = (d) => d[vis.attribute2];
 
+    // reset the brush area if it exists
+    if (vis.brushArea) {
+      vis.brushArea.call(vis.brush).call(vis.brush.move, null);
+    }
+
     // add brush
     vis.brush = d3
       .brushX()
@@ -82,8 +87,8 @@ class TimeLineChart {
         }
       });
 
-    vis.svg.append("g").attr("class", "brush").call(vis.brush);
-
+    // Add the brush area
+    vis.brushArea = vis.svg.append("g").attr("class", "brush").call(vis.brush);
     // Create the scale
     vis.x = d3
       .scaleTime()
