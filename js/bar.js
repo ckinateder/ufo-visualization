@@ -84,6 +84,10 @@ class HistogramChart {
       )
       .attr("fill", "steelblue");
 
+    // TODO - add tooltip
+
+    // TODO - add brushing and linking
+
     // Make xAxis svg element using the x-scale.
     vis.xAxis = d3.axisBottom(vis.x).ticks(10);
 
