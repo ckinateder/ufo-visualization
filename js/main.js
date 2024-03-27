@@ -40,7 +40,7 @@ d3.csv("data/ufo_sightings.csv")
     });
 
     // random sample of a test set - CHANGE THIS TO THE FULL DATASET
-    let dataSize = 4000;
+    let dataSize = 20000;
     filteredData = filteredData
       .sort(() => Math.random() - Math.random())
       .slice(0, dataSize);
@@ -100,7 +100,7 @@ d3.csv("data/ufo_sightings.csv")
 
     // Chart with sightings by encounter length
     let encounterLengthGetter = (d) => d.encounterLength;
-    encounterLengthChart = new HistogramChart(
+    encounterLengthChart = new DensityChart(
       {
         parentElement: "#ufo-encounter-length-trends",
         title: "Distribution of Sightings by Encounter Length",

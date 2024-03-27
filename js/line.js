@@ -8,7 +8,7 @@ class TimeLineChart {
       parentElement: _config.parentElement,
       containerWidth: _config.containerWidth || 1200,
       containerHeight: _config.containerHeight || 500,
-      margin: { top: 50, bottom: 55, right: 10, left: 50 },
+      margin: { top: 50, bottom: 55, right: 10, left: 60 },
     };
 
     this.setData(_data, dateColumn);
