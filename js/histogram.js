@@ -12,6 +12,8 @@ class HistogramChart {
       containerHeight: _config.containerHeight || 500,
       margin: { top: 50, bottom: 55, right: 10, left: 60 },
       quantileLimit: _config.quantileLimit || 0,
+      accentColor: _config.accentColor || "#FFB400",
+      normalColor: _config.normalColor || "#69b3a2",
     };
 
     // make a filter id for this chart, must be unique (use date.now())
@@ -69,6 +71,20 @@ class HistogramChart {
       .domain([0, d3.max(vis.bins, (d) => d.length)])
       .range([vis.height - vis.config.margin.bottom, vis.config.margin.top]);
 
+    // we need to create a bar chart
+    vis.bars = vis.svg
+      .selectAll("rect")
+      .data(vis.bins)
+      .join("rect")
+      .attr("x", (d) => vis.x(d.x0))
+      .attr("y", (d) => vis.y(d.length))
+      .attr("width", (d) => vis.x(d.x1) - vis.x(d.x0))
+      .attr(
+        "height",
+        (d) => vis.height - vis.config.margin.bottom - vis.y(d.length)
+      )
+      .attr("fill", vis.config.normalColor);
+
     // add brush
     vis.brush = d3
       .brushX()
@@ -100,24 +116,12 @@ class HistogramChart {
         }
       });
 
-    // we need to create a bar chart
-    vis.bars = vis.svg
-      .selectAll("rect")
-      .data(vis.bins)
-      .join("rect")
-      .attr("x", (d) => vis.x(d.x0))
-      .attr("y", (d) => vis.y(d.length))
-      .attr("width", (d) => vis.x(d.x1) - vis.x(d.x0))
-      .attr(
-        "height",
-        (d) => vis.height - vis.config.margin.bottom - vis.y(d.length)
-      )
-      .attr("fill", "steelblue");
-    vis.svg.append("g").attr("class", "brush").call(vis.brush);
+    vis.brushG = vis.svg.append("g").attr("class", "brush").call(vis.brush);
+
     // add tooltips
     vis.bars
-      .on("mouseover", function (event, d) {
-        d3.select(this).attr("fill", "orange");
+      .on("mousemove", function (event, d) {
+        d3.select(this).attr("fill", vis.config.accentColor);
 
         let tooltipHtml = `<div class="tooltip-label"><strong>Range: </strong>${d.x0} - ${d.x1}</div>`;
         tooltipHtml += `<div class="tooltip-label"><strong>Count: </strong>${d.length}</div>`;
@@ -130,15 +134,13 @@ class HistogramChart {
           .style("opacity", 1)
           .style("z-index", 1000000)
           .html(tooltipHtml);
-      })
-      .on("mousemove", (event) => {
         d3.select("#tooltip")
           .style("left", event.pageX + 10 + "px")
           .style("top", event.pageY + 10 + "px");
       })
       .on("mouseout", function (event, d) {
         d3.select("#tooltip").style("opacity", 0);
-        d3.select(this).attr("fill", "steelblue");
+        d3.select(this).attr("fill", vis.config.normalColor);
       });
 
     // Make xAxis svg element using the x-scale.
@@ -221,7 +223,7 @@ class HistogramChart {
       .append("rect")
       .attr("width", 10)
       .attr("height", 10)
-      .attr("fill", "steelblue");
+      .attr("fill", vis.config.normalColor);
     vis.legend.append("text").attr("x", 15).attr("y", 10).text("Count");
     */
     if (vis.config.quantileLimit > 0) {
@@ -237,6 +239,9 @@ class HistogramChart {
     }
   }
   setData(newData, attribute, transformFunction) {
+    if (transformFunction === undefined) {
+      transformFunction = (d) => d;
+    }
     this.getterFunction = (d) => transformFunction(d[attribute]);
     this.transformFunction = transformFunction;
     this.attribute = attribute;

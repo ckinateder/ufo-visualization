@@ -104,7 +104,7 @@ d3.csv("data/ufo_sightings.csv")
 
     // Chart with sightings by encounter length
     let encounterLengthGetter = (d) => d.encounterLength;
-    encounterLengthChart = new DensityChart(
+    encounterLengthChart = new HistogramChart(
       {
         parentElement: "#ufo-encounter-length-trends",
         title: "Distribution of Sightings by Encounter Length",
@@ -115,7 +115,7 @@ d3.csv("data/ufo_sightings.csv")
         quantileLimit: 0.95, // how much to tighten the quantiles
       },
       processedData,
-      encounterLengthGetter
+      "encounterLength"
     );
 
     // SETTING UP THE CONTROL PANEL

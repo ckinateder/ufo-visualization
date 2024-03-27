@@ -10,6 +10,8 @@ class DensityChart {
       containerHeight: _config.containerHeight || 500,
       margin: { top: 50, bottom: 55, right: 10, left: 60 },
       quantileLimit: _config.quantileLimit || 0,
+      accentColor: _config.accentColor || "#FFB400",
+      normalColor: _config.normalColor || "#69b3a2",
     };
     this.setData(_data, getterFunction);
     this.initVis();
@@ -192,7 +194,7 @@ class DensityChart {
         .append("rect")
         .attr("width", 10)
         .attr("height", 10)
-        .attr("fill", "steelblue");
+        .attr("fill", vis.config.normalColor);
       vis.legend.append("text").attr("x", 15).attr("y", 10).text("Count");
       */
     if (vis.config.quantileLimit > 0) {
