@@ -68,7 +68,7 @@ class HistogramChart {
       .range([vis.height - vis.config.margin.bottom, vis.config.margin.top]);
 
     // we need to create a bar chart
-    vis.svg
+    vis.bars = vis.svg
       .selectAll("rect")
       .data(vis.bins)
       .join("rect")
@@ -80,6 +80,33 @@ class HistogramChart {
         (d) => vis.height - vis.config.margin.bottom - vis.y(d.length)
       )
       .attr("fill", "steelblue");
+
+    // add tooltips
+    vis.bars
+      .on("mouseover", function (event, d) {
+        d3.select(this).attr("fill", "orange");
+
+        let tooltipHtml = `<div class="tooltip-label"><strong>Range: </strong>${d.x0} - ${d.x1}</div>`;
+        tooltipHtml += `<div class="tooltip-label"><strong>Count: </strong>${d.length}</div>`;
+        tooltipHtml += `<div class="tooltip-label"><strong>Percent: </strong>${(
+          (d.length / vis.data.length) *
+          100
+        ).toFixed(2)}%</div>`;
+
+        d3.select("#tooltip")
+          .style("opacity", 1)
+          .style("z-index", 1000000)
+          .html(tooltipHtml);
+      })
+      .on("mousemove", (event) => {
+        d3.select("#tooltip")
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY + 10 + "px");
+      })
+      .on("mouseout", function (event, d) {
+        d3.select("#tooltip").style("opacity", 0);
+        d3.select(this).attr("fill", "steelblue");
+      });
 
     // Make xAxis svg element using the x-scale.
     vis.xAxis = d3.axisBottom(vis.x).ticks(10).tickFormat(d3.format(".2s"));

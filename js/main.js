@@ -104,7 +104,7 @@ d3.csv("data/ufo_sightings.csv")
       {
         parentElement: "#ufo-encounter-length-trends",
         title: "Distribution of Sightings by Encounter Length",
-        xAxisLabel: "Encounter Length (seconds)",
+        xAxisLabel: "Encounter Length (s)",
         containerWidth: 1200,
         containerHeight: 500,
         numBins: 100,

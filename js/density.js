@@ -82,6 +82,37 @@ class DensityChart {
           })
       );
 
+    // add tooltip in curve
+    vis.curve
+      .on("mouseover", function (event, d) {
+        d3.select(this).attr("opacity", "1");
+      })
+      .on("mousemove", function (event) {
+        let tooltipHtml = `<div class="tooltip-label">`;
+
+        let xValue = vis.x.invert(d3.pointer(event)[0]);
+        let yValue = vis.y.invert(d3.pointer(event)[1]);
+        tooltipHtml += `<strong>${
+          vis.config.xAxisLabel
+        }: </strong>${xValue.toFixed(0)}<br>`;
+        tooltipHtml += `<strong>${
+          vis.config.yAxisLabel
+        }: </strong>${yValue.toFixed(4)}<br>`;
+        tooltipHtml += `</div>`;
+
+        d3.select("#tooltip")
+          .style("opacity", 1)
+          .style("z-index", 1000000)
+          .html(tooltipHtml);
+        d3.select("#tooltip")
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY + 10 + "px");
+      })
+      .on("mouseleave", function () {
+        d3.select(this).attr("opacity", ".8");
+        d3.select("#tooltip").style("opacity", 0);
+      });
+
     // Make xAxis svg element using the x-scale.
     vis.xAxis = d3.axisBottom(vis.x).ticks(10).tickFormat(d3.format(".2s"));
 
