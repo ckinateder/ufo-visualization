@@ -233,3 +233,5 @@ const largeTickFormat = function (d) {
   }
   return d;
 };
+const getDayOfYear = (date) =>
+  Math.floor((date.getTime() - new Date(date.getFullYear(), 0, 0)) / 864e5);

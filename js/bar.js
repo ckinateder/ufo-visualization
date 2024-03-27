@@ -41,7 +41,6 @@ class HistogramChart {
 
   // //leave this empty for now...
   updateVis() {
-    console.log(this.data);
     let vis = this; // create svg element
 
     // we want to create a histogram of the data

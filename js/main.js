@@ -39,7 +39,7 @@ d3.csv("data/ufo_sightings.csv")
     });
 
     // random sample of a test set - CHANGE THIS TO THE FULL DATASET
-    let dataSize = 1000;
+    let dataSize = 4000;
     filteredData = filteredData
       .sort(() => Math.random() - Math.random())
       .slice(0, dataSize);
@@ -80,6 +80,21 @@ d3.csv("data/ufo_sightings.csv")
       },
       filteredData,
       hourGetter
+    );
+
+    // Chart with sightings by day of year
+    let dayGetter = (d) => getDayOfYear(d.date_time);
+    dayChart = new HistogramChart(
+      {
+        parentElement: "#ufo-day-trends",
+        title: "Sightings by Day of Year",
+        xAxisLabel: "Day of Year",
+        containerWidth: 1200,
+        containerHeight: 500,
+        numBins: 366,
+      },
+      filteredData,
+      dayGetter
     );
 
     // SETTING UP THE CONTROL PANEL
