@@ -29,6 +29,7 @@ d3.csv("data/ufo_sightings.csv")
         described_encounter_length: replaceCodedChar(
           d.described_encounter_length
         ),
+        encounterLength: +d.encounter_length, // mins
         description: replaceCodedChar(d.description),
         latitude: +d.latitude,
         longitude: +d.longitude,
@@ -72,7 +73,7 @@ d3.csv("data/ufo_sightings.csv")
     hourChart = new HistogramChart(
       {
         parentElement: "#ufo-hour-trends",
-        title: "Sightings by Hour",
+        title: "Distribution of Sightings by Hour",
         xAxisLabel: "Hour",
         containerWidth: 1200,
         containerHeight: 500,
@@ -87,7 +88,7 @@ d3.csv("data/ufo_sightings.csv")
     dayChart = new HistogramChart(
       {
         parentElement: "#ufo-day-trends",
-        title: "Sightings by Day of Year",
+        title: "Distribution of Sightings by Day of Year",
         xAxisLabel: "Day of Year",
         containerWidth: 1200,
         containerHeight: 500,
@@ -95,6 +96,22 @@ d3.csv("data/ufo_sightings.csv")
       },
       filteredData,
       dayGetter
+    );
+
+    // Chart with sightings by encounter length
+    let encounterLengthGetter = (d) => d.encounterLength;
+    encounterLengthChart = new HistogramChart(
+      {
+        parentElement: "#ufo-encounter-length-trends",
+        title: "Distribution of Sightings by Encounter Length",
+        xAxisLabel: "Encounter Length (seconds)",
+        containerWidth: 1200,
+        containerHeight: 500,
+        numBins: 100,
+        quantileLimit: 0.95, // how much to tighten the quantiles
+      },
+      filteredData,
+      encounterLengthGetter
     );
 
     // SETTING UP THE CONTROL PANEL

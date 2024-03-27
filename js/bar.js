@@ -11,6 +11,7 @@ class HistogramChart {
       containerWidth: _config.containerWidth || 1200,
       containerHeight: _config.containerHeight || 500,
       margin: { top: 50, bottom: 55, right: 10, left: 50 },
+      quantileLimit: _config.quantileLimit || 0,
     };
 
     this.setData(_data, getterFunction);
@@ -55,12 +56,14 @@ class HistogramChart {
     vis.bins = vis.histogram(vis.data);
 
     // we need to create a scale for the x-axis
+    console.log(
+      vis.config.parentElement,
+      ":",
+      d3.extent(vis.data, vis.getterFunction)
+    );
     vis.x = d3
       .scaleLinear()
-      .domain([
-        d3.min(vis.data, vis.getterFunction),
-        d3.max(vis.data, vis.getterFunction),
-      ])
+      .domain(d3.extent(vis.data, vis.getterFunction))
       .range([vis.config.margin.left, vis.width - vis.config.margin.right]);
 
     // we need to create a scale for the y-axis
@@ -84,7 +87,7 @@ class HistogramChart {
       .attr("fill", "steelblue");
 
     // Make xAxis svg element using the x-scale.
-    vis.xAxis = d3.axisBottom(vis.x).ticks(10);
+    vis.xAxis = d3.axisBottom(vis.x).ticks(10).tickFormat(d3.format(".2s"));
 
     // Make yAxis svg element using the y-scale.
     vis.yAxis = d3.axisLeft(vis.y).ticks(10).tickFormat(largeTickFormat);
@@ -149,5 +152,25 @@ class HistogramChart {
   setData(newData, getterFunction) {
     this.getterFunction = getterFunction;
     this.data = newData;
+
+    if (this.config.quantileLimit > 0) {
+      // filter outliers
+      let q1 = d3.quantile(
+        this.data.map(this.getterFunction).sort(),
+        1 - this.config.quantileLimit
+      );
+      let q3 = d3.quantile(
+        this.data.map(this.getterFunction).sort(),
+        this.config.quantileLimit
+      );
+      let iqr = q3 - q1;
+      let lowerBound = q1 - 1.5 * iqr;
+      let upperBound = q3 + 1.5 * iqr;
+      this.data = this.data.filter(
+        (d) =>
+          this.getterFunction(d) >= lowerBound &&
+          this.getterFunction(d) <= upperBound
+      );
+    }
   }
 }
