@@ -61,7 +61,7 @@ class TimeLineChart {
       .on("end", (event) => {
         if (!event.selection) {
           // if selection is empty, reset the time range
-          updateFilter({ id: vis.filterId, column: vis.dateColumn, range: [] }); // reset the filter
+          removeFilter(vis.filterId); // remove the filter
           updateLeafletMap(); // update the leaflet map
         } else {
           // get the selected range
