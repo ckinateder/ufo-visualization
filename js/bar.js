@@ -56,11 +56,6 @@ class HistogramChart {
     vis.bins = vis.histogram(vis.data);
 
     // we need to create a scale for the x-axis
-    console.log(
-      vis.config.parentElement,
-      ":",
-      d3.extent(vis.data, vis.getterFunction)
-    );
     vis.x = d3
       .scaleLinear()
       .domain(d3.extent(vis.data, vis.getterFunction))
@@ -148,6 +143,38 @@ class HistogramChart {
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
       .text(vis.config.title);
+    /*
+    // Add a legend
+    vis.legend = vis.svg
+      .append("g")
+      .attr(
+        "transform",
+        `translate(${vis.width - 100}, ${vis.config.margin.top})`
+      );
+    // add background
+    vis.legend
+      .append("rect")
+      .attr("width", 80)
+      .attr("height", 20)
+      .attr("fill", "white");
+    vis.legend
+      .append("rect")
+      .attr("width", 10)
+      .attr("height", 10)
+      .attr("fill", "steelblue");
+    vis.legend.append("text").attr("x", 15).attr("y", 10).text("Count");
+    */
+    if (vis.config.quantileLimit > 0) {
+      vis.svg
+        .append("text")
+        .attr("x", vis.width - vis.config.margin.right)
+        .attr("y", vis.height - vis.config.margin.bottom / 2 + 5)
+        .attr("text-anchor", "end")
+        .style("font-size", "10px")
+        .text(
+          `*Outliers removed using IQR with a ${vis.config.quantileLimit} QT limit`
+        );
+    }
   }
   setData(newData, getterFunction) {
     this.getterFunction = getterFunction;
