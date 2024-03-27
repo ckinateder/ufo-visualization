@@ -19,7 +19,7 @@ class HistogramChart {
     };
 
     // make a filter id for this chart, must be unique (use date.now())
-    this.filterId = `${attribute}-filter-${Date.now()}`;
+    this.filterId = `${attribute}-${Date.now().toString(36)}`;
     this.setData(_data, attribute, transformFunction);
 
     // Call a class function

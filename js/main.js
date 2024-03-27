@@ -176,16 +176,14 @@ function updateFilter(filter) {
   } else {
     dataFilter[index] = filter;
   }
-  console.log(
-    `Updated filter '${filter.id}': now filtering by ${dataFilter.length} filters`
-  );
+  console.log(`Updated filter '${filter.id}'`);
+  console.log(dataFilter);
 }
 
 removeFilter = (filterId) => {
   dataFilter = dataFilter.filter((d) => d.id != filterId);
-  console.log(
-    `Updated filter '${filterId}': now filtering by ${dataFilter.length} filters`
-  );
+  console.log(`Updated filter '${filterId}'`);
+  console.log(dataFilter);
 };
 
 function inFilter(d) {
