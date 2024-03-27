@@ -134,11 +134,6 @@ d3.csv("data/ufo_sightings.csv")
 
   .catch((error) => console.error(error));
 
-d3.select("#coloring").on("change", function () {
-  coloring = d3.select(this).property("value");
-  updateColoring();
-});
-
 function updateColoring() {
   leafletMap.setColoring(coloring);
   leafletMap.updateVis();
@@ -204,8 +199,6 @@ function inFilter(d) {
   return true;
 }
 
-d3.select("#reset").on("click", resetAll);
-
 function resetAll() {
   // reset the data
   processedData = JSON.parse(JSON.stringify(defaultData));
@@ -226,3 +219,11 @@ function updateAll() {
     chart.updateVis();
   }
 }
+
+// handlers
+d3.select("#reset").on("click", resetAll);
+
+d3.select("#coloring").on("change", () => {
+  coloring = d3.select(this).property("value");
+  updateColoring();
+});
