@@ -161,10 +161,7 @@ class LeafletMap {
 
     // only show dots if within timeRange
     vis.Dots.attr("display", (d) => {
-      if (
-        timeRange.length == 0 ||
-        (d.date_time >= timeRange[0] && d.date_time <= timeRange[1])
-      ) {
+      if (inFilter(d)) {
         return "block";
       } else {
         return "none";

@@ -11,6 +11,7 @@ class TimeLineChart {
       margin: { top: 50, bottom: 55, right: 10, left: 60 },
     };
 
+    this.dateColumn = dateColumn; // MUST BE A DATE OBJECT
     this.setData(_data, dateColumn);
 
     // Call a class function
@@ -55,24 +56,11 @@ class TimeLineChart {
           vis.height - vis.config.margin.bottom,
         ],
       ])
-      .on("brush", (event) => {
-        /* // removed for memory
-        // get the selected range
-        let x0 = event.selection[0];
-        let x1 = event.selection[1];
-
-        // get the lowest and highest value in the selected range
-        let selectedData = vis.dataByMonth.filter(
-          (d) => vis.x(xValue(d)) >= x0 && vis.x(xValue(d)) <= x1
-        );
-        timeRange = d3.extent(selectedData, xValue); // update the time range
-        updateLeafletMap(); // update the leaflet map
-        */
-      })
+      .on("brush", (event) => {})
       .on("end", (event) => {
         if (!event.selection) {
           // if selection is empty, reset the time range
-          timeRange = []; // reset the time range
+          updateFilter(vis.dateColumn, []);
           updateLeafletMap(); // update the leaflet map
         } else {
           // get the selected range
@@ -83,7 +71,7 @@ class TimeLineChart {
           let selectedData = vis.dataByMonth.filter(
             (d) => vis.x(xValue(d)) >= x0 && vis.x(xValue(d)) <= x1
           );
-          timeRange = d3.extent(selectedData, xValue); // update the time range
+          updateFilter(vis.dateColumn, d3.extent(selectedData, xValue)); // update the filter
           updateLeafletMap(); // update the leaflet map
         }
       });

@@ -5,8 +5,8 @@ let leafletMap,
   globalData,
   defaultData,
   coloring,
-  filteredData,
-  incompleteDat;
+  processedData,
+  dataFilter;
 /**
  * timeRange is a global variable that holds the range of dates that the user has selected.
  */
@@ -18,10 +18,10 @@ d3.csv("data/ufo_sightings.csv")
   .then((data) => {
     console.log(`decoding ${data.length} rows`);
 
-    filteredData = [];
+    processedData = [];
 
     data.forEach((d) => {
-      filteredData.push({
+      processedData.push({
         city: replaceCodedChar(d.city_area),
         state: replaceCodedChar(d.state.toUpperCase()),
         country: replaceCodedChar(d.country.toUpperCase()),
@@ -40,20 +40,23 @@ d3.csv("data/ufo_sightings.csv")
 
     // random sample of a test set - CHANGE THIS TO THE FULL DATASET
     let dataSize = 20000;
-    filteredData = filteredData
+    processedData = processedData
       .sort(() => Math.random() - Math.random())
       .slice(0, dataSize);
 
     //set the global data variable
 
     //set the default data variable by copying
-    defaultData = JSON.parse(JSON.stringify(filteredData));
+    defaultData = JSON.parse(JSON.stringify(processedData));
 
     // initialize default time range
     timeRange = [];
+    // data filter is constructed like {key: [min, max], key2: [min2, max2], ...}
+    // key must be a string that is a column name in the data
+    dataFilter = {};
 
     // Initialize chart and then show it
-    leafletMap = new LeafletMap({ parentElement: "#ufo-map" }, filteredData);
+    leafletMap = new LeafletMap({ parentElement: "#ufo-map" }, processedData);
 
     // Timeline chart with the sightings by month
     timeline = new TimeLineChart(
@@ -62,7 +65,7 @@ d3.csv("data/ufo_sightings.csv")
         containerWidth: 1200,
         containerHeight: 500,
       },
-      filteredData,
+      processedData,
       "date_time"
     );
 
@@ -77,7 +80,7 @@ d3.csv("data/ufo_sightings.csv")
         containerHeight: 500,
         numBins: 24,
       },
-      filteredData,
+      processedData,
       hourGetter
     );
 
@@ -92,7 +95,7 @@ d3.csv("data/ufo_sightings.csv")
         containerHeight: 500,
         numBins: 366,
       },
-      filteredData,
+      processedData,
       dayGetter
     );
 
@@ -108,7 +111,7 @@ d3.csv("data/ufo_sightings.csv")
         numBins: 100,
         quantileLimit: 0.95, // how much to tighten the quantiles
       },
-      filteredData,
+      processedData,
       encounterLengthGetter
     );
 
@@ -140,6 +143,22 @@ function updateColoring() {
 
 function updateLeafletMap() {
   leafletMap.updateVis();
+}
+
+function updateFilter(col, range) {
+  // ensure that the range is sorted
+  range.sort((a, b) => a - b);
+  dataFilter[col] = range;
+}
+
+function inFilter(d) {
+  for (let key in dataFilter) {
+    let range = dataFilter[key];
+    if (d[key] < range[0] || d[key] > range[1]) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function updateAll() {}
