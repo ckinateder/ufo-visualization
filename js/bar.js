@@ -83,13 +83,21 @@ class HistogramChart {
       )
       .attr("fill", "steelblue");
 
-    // TODO - add tooltip
-
-    // TODO - add brushing and linking
-
     // Make xAxis svg element using the x-scale.
     vis.xAxis = d3.axisBottom(vis.x).ticks(10);
 
+    // Make yAxis svg element using the y-scale.
+    vis.yAxis = d3.axisLeft(vis.y).ticks(10).tickFormat(largeTickFormat);
+
+    // add axes to plot
+    this.addAxes();
+
+    // TODO - add tooltip
+
+    // TODO - add brushing and linking
+  }
+  addAxes() {
+    let vis = this;
     // Append the xAxis to the plot
     vis.svg
       .append("g")
@@ -99,9 +107,6 @@ class HistogramChart {
         `translate(0, ${vis.height - vis.config.margin.bottom})`
       )
       .call(vis.xAxis);
-
-    // Make yAxis svg element using the y-scale.
-    vis.yAxis = d3.axisLeft(vis.y).ticks(10).tickFormat(largeTickFormat);
 
     // Append the yAxis to the plot
     vis.svg
@@ -141,7 +146,6 @@ class HistogramChart {
       .style("font-size", "16px")
       .text(vis.config.title);
   }
-
   setData(newData, getterFunction) {
     this.getterFunction = getterFunction;
     this.data = newData;
