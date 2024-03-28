@@ -21,7 +21,7 @@ d3.csv("data/ufo_sightings.csv")
     processedData = [];
 
     data.forEach((d) => {
-      processedData.push({
+      let obj = {
         city: replaceCodedChar(d.city_area),
         state: replaceCodedChar(d.state.toUpperCase()),
         country: replaceCodedChar(d.country.toUpperCase()),
@@ -34,8 +34,10 @@ d3.csv("data/ufo_sightings.csv")
         longitude: +d.longitude,
         date_documented: new Date(d.date_documented),
         date_time: new Date(d.date_time),
-        shape: replaceCodedChar(d.ufo_shape),
-      });
+        shape: replaceCodedChar(d.ufo_shape).toLowerCase(),
+      };
+      if (obj.shape === "na") obj.shape = "unknown";
+      processedData.push(obj);
     });
 
     // random sample of a test set - CHANGE THIS TO THE FULL DATASET
@@ -118,6 +120,19 @@ d3.csv("data/ufo_sightings.csv")
       "encounterLength"
     );
 
+    // chart with sightings by shape
+    shapeChart = new BarChart(
+      {
+        parentElement: "#ufo-shape-trends",
+        title: "Distribution of Sightings by Shape",
+        xAxisLabel: "Shape",
+        containerWidth: 1200,
+        containerHeight: 500,
+      },
+      processedData,
+      "shape"
+    );
+
     // SETTING UP THE CONTROL PANEL
 
     // fill coloring dropdown
@@ -128,6 +143,7 @@ d3.csv("data/ufo_sightings.csv")
       .append("option")
       .text((d) => d);
     coloring = defaultColoring;
+
     d3.select("#coloring").property("value", defaultColoring);
     updateColoring();
   })
@@ -142,7 +158,6 @@ function updateColoring() {
 function updateLeafletMap() {
   leafletMap.updateVis();
 }
-
 function updateFilter(filter) {
   /**
    * filter is an object with the following structure:
@@ -185,6 +200,7 @@ removeFilter = (filterId) => {
 
 function inFilter(d) {
   // apply transformations and check if the data is within the range
+  // this WORKS even with stings!! as long as they were sorted alphabetically beforehand
   for (let i = 0; i < dataFilter.length; i++) {
     let filter = dataFilter[i];
     let point = d[filter.column];
@@ -224,6 +240,7 @@ function updateAll() {
 d3.select("#reset").on("click", resetAll);
 
 d3.select("#coloring").on("change", () => {
-  coloring = d3.select(this).property("value");
+  // get selection value
+  coloring = d3.select("#coloring").property("value");
   updateColoring();
 });

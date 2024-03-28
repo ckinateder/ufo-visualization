@@ -141,7 +141,7 @@ class HistogramChart {
 
         let tooltipHtml = `<div class="tooltip-label"><strong>Range: </strong>${d.x0} - ${d.x1}</div>`;
         tooltipHtml += `<div class="tooltip-label"><strong>Count: </strong>${d.length}</div>`;
-        tooltipHtml += `<div class="tooltip-label"><strong>Percent: </strong>${(
+        tooltipHtml += `<div class="tooltip-label"><strong>Percentage: </strong>${(
           (d.length / vis.data.length) *
           100
         ).toFixed(2)}%</div>`;
