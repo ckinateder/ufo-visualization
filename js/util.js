@@ -271,3 +271,14 @@ function scaleBandInvert(scale) {
     return domain[Math.max(0, Math.min(index, domain.length - 1))];
   };
 }
+
+hourToTime = (hour) => {
+  // takes a decimal hour and converts it to a time string, PM or AM
+  let h = Math.floor(hour);
+  let m = Math.floor((hour - h) * 60);
+  let suffix = h >= 12 ? "PM" : "AM";
+  h = h % 12;
+  h = h ? h : 12; // the hour '0' should be '12'
+  m = m < 10 ? "0" + m : m;
+  return `${h}:${m} ${suffix}`;
+};

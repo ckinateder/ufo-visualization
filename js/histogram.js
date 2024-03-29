@@ -1,7 +1,13 @@
 // create a HistogramChart class
 // the getterFunction is a function that takes in a data point and returns the attribute that you want to bin
 class HistogramChart {
-  constructor(_config, _data, attribute, transformFunction) {
+  constructor(
+    _config,
+    _data,
+    attribute,
+    transformFunction,
+    descriptionFunction
+  ) {
     this.config = {
       title: _config.title || "Histogram",
       xAxisLabel: _config.xAxisLabel || "x-axis",
@@ -20,7 +26,7 @@ class HistogramChart {
 
     // make a filter id for this chart, must be unique (use date.now())
     this.filterId = `${attribute}-${Date.now().toString(36)}`;
-    this.setData(_data, attribute, transformFunction);
+    this.setData(_data, attribute, transformFunction, descriptionFunction);
 
     // Call a class function
     this.initVis();
@@ -51,9 +57,7 @@ class HistogramChart {
     let vis = this; // create svg element
 
     // reset the brush area if it exists
-    if (vis.brushArea) {
-      vis.brushArea.call(vis.brush).call(vis.brush.move, null);
-    }
+    this.resetBrushArea();
 
     // add brush
     vis.brush = d3
@@ -70,7 +74,6 @@ class HistogramChart {
         if (!event.selection) {
           // if selection is empty, reset the time range
           removeFilter(vis.filterId); // remove the filter
-          updateLeafletMap(); // update the leaflet map
         } else {
           // get the selected range
           let x0 = event.selection[0];
@@ -81,8 +84,8 @@ class HistogramChart {
             column: vis.attribute,
             transformation: vis.transformFunction,
             range: range,
+            description: vis.descriptionFunction(vis.attribute, range),
           }); // update the filter
-          updateLeafletMap(); // update the leaflet map
         }
       });
 
@@ -246,12 +249,14 @@ class HistogramChart {
         .attr("y", vis.height - vis.config.margin.bottom / 2 + 5)
         .attr("text-anchor", "end")
         .style("font-size", "10px")
-        .text(
-          `*Outliers removed using IQR with a ${vis.config.quantileLimit} QT limit`
-        );
+        .text(`*Inner fences set at ${vis.config.quantileLimit} quartile`);
     }
   }
-  setData(newData, attribute, transformFunction) {
+  setData(newData, attribute, transformFunction, descriptionFunction) {
+    if (descriptionFunction === undefined) {
+      descriptionFunction = (c, r) => `${c} in [${r[0]}, ${r[1]}]`;
+    }
+    this.descriptionFunction = descriptionFunction;
     if (transformFunction === undefined) {
       transformFunction = (d) => d;
     }
@@ -278,6 +283,13 @@ class HistogramChart {
           this.getterFunction(d) >= lowerBound &&
           this.getterFunction(d) <= upperBound
       );
+    }
+  }
+
+  resetBrushArea() {
+    let vis = this;
+    if (vis.brushArea) {
+      vis.brushArea.call(vis.brush).call(vis.brush.move, null);
     }
   }
 }

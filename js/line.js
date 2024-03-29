@@ -3,7 +3,7 @@
  * This class is responsible for creating a line chart that shows a given  time series by month and year.
  */
 class TimeLineChart {
-  constructor(_config, _data, dateColumn) {
+  constructor(_config, _data, dateColumn, descriptionFunction) {
     this.config = {
       parentElement: _config.parentElement,
       containerWidth: _config.containerWidth || 1200,
@@ -15,7 +15,7 @@ class TimeLineChart {
 
     this.filterId = `${dateColumn}-${Date.now().toString(36)}`;
     this.dateColumn = dateColumn; // MUST BE A DATE OBJECT
-    this.setData(_data, dateColumn);
+    this.setData(_data, dateColumn, descriptionFunction);
 
     // Call a class function
     this.initVis();
@@ -50,9 +50,7 @@ class TimeLineChart {
     let yValue = (d) => d[vis.attribute2];
 
     // reset the brush area if it exists
-    if (vis.brushArea) {
-      vis.brushArea.call(vis.brush).call(vis.brush.move, null);
-    }
+    this.resetBrushArea();
 
     // add brush
     vis.brush = d3
@@ -69,7 +67,6 @@ class TimeLineChart {
         if (!event.selection) {
           // if selection is empty, reset the time range
           removeFilter(vis.filterId); // remove the filter
-          updateLeafletMap(); // update the leaflet map
         } else {
           // get the selected range
           let x0 = event.selection[0];
@@ -82,8 +79,8 @@ class TimeLineChart {
             id: vis.filterId,
             column: vis.dateColumn,
             range: range,
+            description: vis.descriptionFunction(vis.dateColumn, range),
           }); // update the filter
-          updateLeafletMap(); // update the leaflet map
         }
       });
 
@@ -218,7 +215,11 @@ class TimeLineChart {
       .text("UFO Sightings by Month and Year");
   }
 
-  setData(newData, dateColumn) {
+  setData(newData, dateColumn, descriptionFunction) {
+    if (descriptionFunction === undefined) {
+      descriptionFunction = (c, r) => `${c} in [${r[0]}, ${r[1]}]`;
+    }
+    this.descriptionFunction = descriptionFunction;
     // samples the data by month and year
     // assert the column is a date object
     if (typeof newData[0][dateColumn] !== "object") {
@@ -231,5 +232,11 @@ class TimeLineChart {
     this.dataByMonth = rollupDataByMonthAndYear(newData, dateColumn, false); // rollup the data by month and year
     this.attribute1 = "date"; // the attribute for the x-axis
     this.attribute2 = "count"; // the attribute for the y-axis
+  }
+  resetBrushArea() {
+    let vis = this;
+    if (vis.brushArea) {
+      vis.brushArea.call(vis.brush).call(vis.brush.move, null);
+    }
   }
 }
