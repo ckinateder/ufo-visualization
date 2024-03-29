@@ -271,3 +271,21 @@ function scaleBandInvert(scale) {
     return domain[Math.max(0, Math.min(index, domain.length - 1))];
   };
 }
+
+hourToTime = (hour) => {
+  // takes a decimal hour and converts it to a time string, PM or AM
+  let h = Math.floor(hour);
+  let m = Math.floor((hour - h) * 60);
+  let suffix = h >= 12 ? "PM" : "AM";
+  h = h % 12;
+  h = h ? h : 12; // the hour '0' should be '12'
+  m = m < 10 ? "0" + m : m;
+  return `${h}:${m} ${suffix}`;
+};
+joinArray = (arr, conjunction) => {
+  // takes an array and joins it with a conjunction
+  if (arr.length == 0) return "";
+  if (arr.length == 1) return arr[0];
+  if (arr.length == 2) return arr[0] + " " + conjunction + " " + arr[1];
+  return arr.slice(0, -1).join(", ") + ", " + conjunction + " " + arr.slice(-1);
+};

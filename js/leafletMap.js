@@ -6,7 +6,9 @@ class LeafletMap {
    */
   constructor(_config, _data) {
     this.config = {
-      parentElement: _config.parentElement,
+      parentElement: _config.parentElement.replace("#", ""), //without the # sign
+      defaultZoom: _config.defaultZoom || 2,
+      defaultCenter: _config.defaultCenter || [30, 0],
     };
     this.data = _data;
     this.radiusSize = 3;
@@ -30,9 +32,9 @@ class LeafletMap {
       }
     );
 
-    vis.theMap = L.map("ufo-map", {
-      center: [30, 0],
-      zoom: 2,
+    vis.theMap = L.map(this.config.parentElement, {
+      center: this.config.defaultCenter,
+      zoom: this.config.defaultZoom,
       layers: [vis.base_layer],
     });
 
@@ -220,5 +222,11 @@ class LeafletMap {
     let vis = this;
 
     //not using right now...
+  }
+
+  resetMap() {
+    let vis = this;
+
+    vis.theMap.setView(vis.config.defaultCenter, vis.config.defaultZoom);
   }
 }

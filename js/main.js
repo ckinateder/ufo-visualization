@@ -66,10 +66,12 @@ d3.csv("data/ufo_sightings.csv")
       {
         parentElement: "#ufo-timeline",
         containerWidth: 1200,
-        containerHeight: 500,
+        containerHeight: 400,
       },
       processedData,
-      "date_time"
+      "date_time",
+      (column, range) =>
+        `Date of sighting filtered between ${range[0].toLocaleDateString()} and ${range[1].toLocaleDateString()}.`
     );
 
     // Hour chart with the sightings by hour
@@ -85,7 +87,11 @@ d3.csv("data/ufo_sightings.csv")
       },
       processedData,
       "date_time",
-      getHours
+      getHours,
+      (column, range) =>
+        `Time of day filtered between ${hourToTime(range[0])} and ${hourToTime(
+          range[1]
+        )}.`
     );
 
     // Chart with sightings by day of year
@@ -101,7 +107,11 @@ d3.csv("data/ufo_sightings.csv")
       },
       processedData,
       "date_time",
-      getDayOfYear
+      getDayOfYear,
+      (column, range) =>
+        `Day of year filtered between ${Math.round(range[0])} and ${Math.round(
+          range[1]
+        )}.`
     );
 
     // Chart with sightings by encounter length
@@ -113,11 +123,16 @@ d3.csv("data/ufo_sightings.csv")
         xAxisLabel: "Encounter Length (s)",
         containerWidth: 1200,
         containerHeight: 500,
-        numBins: 100,
+        numBins: 50,
         quantileLimit: 0.95, // how much to tighten the quantiles
       },
       processedData,
-      "encounterLength"
+      "encounterLength",
+      (d) => d,
+      (column, range) =>
+        `Encounter length filtered between ${Math.round(
+          range[0]
+        )} and ${Math.round(range[1])} seconds.`
     );
 
     // chart with sightings by shape
@@ -130,7 +145,12 @@ d3.csv("data/ufo_sightings.csv")
         containerHeight: 500,
       },
       processedData,
-      "shape"
+      "shape",
+      (column, range) =>
+        `Shape filtered to show only sightings with shape ${joinArray(
+          range,
+          "or"
+        )}.`
     );
 
     // SETTING UP THE CONTROL PANEL
@@ -160,13 +180,21 @@ function updateLeafletMap() {
 }
 function updateFilter(filter) {
   /**
-   * filter is an object with the following structure:
-   * {
-   * id: filterId,
-   * column: column,
-   * range: [min, max],
-   * transformation: function (optional)
-   * }
+   filter is an object with the following structure:
+    {
+      id: string,
+      column: string,
+      range: [min, max],
+      transformation: function,
+      description: string
+    }
+    The description will be a string that will be shown in the filter list.
+    
+    The transformation will be a function that will be applied to the data before filtering.
+    This will take 1 argument, the data point, and will return the transformed data point.
+    Example:
+      transformation: (d) => d.toLowerCase()
+    
    */
   // check if filter has id, range
   if (!filter.id || !filter.range || !filter.column) {
@@ -188,15 +216,32 @@ function updateFilter(filter) {
   }
   console.log(`Updated filter '${filter.id}'`);
   console.log(dataFilter);
-
+  renderFilter();
+  updateLeafletMap(); // update the leaflet map
   // TODO - html element with showing the filters applied
 }
 
 removeFilter = (filterId) => {
   dataFilter = dataFilter.filter((d) => d.id != filterId);
-  console.log(`Updated filter '${filterId}'`);
+  console.log(`Removed filter '${filterId}'`);
   console.log(dataFilter);
+  renderFilter();
+  updateLeafletMap();
 };
+
+function renderFilter() {
+  // render the filters applied
+  // iterate through the dataFilter and render the filters
+  let html = "";
+  for (let i = 0; i < dataFilter.length; i++) {
+    let filter = dataFilter[i];
+    html += `<div class="filter">
+      <span>${filter.description}</span>
+    </div>`;
+  }
+
+  d3.select("#filter-list").html(html);
+}
 
 function inFilter(d) {
   // apply transformations and check if the data is within the range
@@ -225,8 +270,19 @@ function resetAll() {
   d3.select("#coloring").property("value", defaultColoring);
   updateColoring();
 
+  // reset map
+  leafletMap.resetMap();
+
+  // reset the brush area
+
   // update the visualizations
   updateAll();
+}
+function resetAllBrushAreas() {
+  // reset the brush area
+  for (let chart of [timeline, hourChart, dayChart, encounterLengthChart]) {
+    chart.resetBrushArea();
+  }
 }
 
 function updateAll() {

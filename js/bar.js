@@ -1,7 +1,6 @@
-// create a HistogramChart class
-// the getterFunction is a function that takes in a data point and returns the attribute that you want to bin
+// THIS IS FOR STRING DATA
 class BarChart {
-  constructor(_config, _data, attribute) {
+  constructor(_config, _data, attribute, descriptionFunction) {
     this.config = {
       title: _config.title || "Histogram",
       xAxisLabel: _config.xAxisLabel || "x-axis",
@@ -20,7 +19,7 @@ class BarChart {
 
     // make a filter id for this chart, must be unique (use date.now())
     this.filterId = `${attribute}-${Date.now().toString(36)}`;
-    this.setData(_data, attribute);
+    this.setData(_data, attribute, descriptionFunction);
 
     // Call a class function
     this.initVis();
@@ -51,9 +50,7 @@ class BarChart {
     let vis = this; // create svg element
 
     // reset the brush area if it exists
-    if (vis.brushArea) {
-      vis.brushArea.call(vis.brush).call(vis.brush.move, null);
-    }
+    this.resetBrushArea();
 
     // add brush
     vis.brush = d3
@@ -70,10 +67,7 @@ class BarChart {
         if (!event.selection) {
           // if selection is empty, reset the time range
           removeFilter(vis.filterId); // remove the filter
-          updateLeafletMap(); // update the leaflet map
         } else {
-          console.log(event);
-
           let range = [
             scaleBandInvert(vis.x)(event.selection[0]),
             scaleBandInvert(vis.x)(event.selection[1]),
@@ -83,16 +77,16 @@ class BarChart {
             id: vis.filterId,
             column: vis.attribute,
             range: range,
+            description: vis.descriptionFunction(
+              vis.attribute,
+              vis.getCategoriesInRange(range)
+            ),
           }); // update the filter
-          updateLeafletMap(); // update the leaflet map
         }
       });
 
     // add brush to context
     vis.brushArea = vis.svg.append("g").attr("class", "brush").call(vis.brush);
-
-    // make a histogram with the x value being the attribute (strings)
-    console.log(vis.data);
 
     // X axis
     vis.x = d3
@@ -247,7 +241,11 @@ class BarChart {
         );
     }
   }
-  setData(newData, attribute) {
+  setData(newData, attribute, descriptionFunction) {
+    if (descriptionFunction === undefined) {
+      descriptionFunction = (c, r) => `${c} in [${r[0]}, ${r[1]}]`;
+    }
+    this.descriptionFunction = descriptionFunction;
     this.getterFunction = (d) => d[attribute];
     this.attribute = attribute;
 
@@ -267,5 +265,17 @@ class BarChart {
     this.sum = d3.sum(this.data, (d) => d.count);
   }
 
-  _invertX(x) {}
+  getCategoriesInRange(range) {
+    let cats = this.data.filter(
+      (d) => range[0] <= d.attribute && d.attribute <= range[1]
+    );
+    return cats.map((d) => d.attribute);
+  }
+
+  resetBrushArea() {
+    let vis = this;
+    if (vis.brushArea) {
+      vis.brushArea.call(vis.brush).call(vis.brush.move, null);
+    }
+  }
 }
