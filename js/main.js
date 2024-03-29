@@ -103,7 +103,7 @@ d3.csv("data/ufo_sightings.csv")
         xAxisLabel: "Day of Year",
         containerWidth: 1200,
         containerHeight: 500,
-        numBins: 366,
+        numBins: 183,
       },
       processedData,
       "date_time",
@@ -220,7 +220,6 @@ function updateFilter(filter) {
   console.log(dataFilter);
   renderFilter();
   updateLeafletMap(); // update the leaflet map
-  // TODO - html element with showing the filters applied
 }
 
 removeFilter = (filterId) => {
