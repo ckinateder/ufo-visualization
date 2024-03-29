@@ -147,7 +147,10 @@ d3.csv("data/ufo_sightings.csv")
       processedData,
       "shape",
       (column, range) =>
-        `Shape filtered between '${range[0]}' and '${range[1]}' (alphabetical).`
+        `Shape filtered to show only sightings with shape ${joinArray(
+          range,
+          "or"
+        )}.`
     );
 
     // SETTING UP THE CONTROL PANEL

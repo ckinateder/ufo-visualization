@@ -1,5 +1,4 @@
-// create a HistogramChart class
-// the getterFunction is a function that takes in a data point and returns the attribute that you want to bin
+// THIS IS FOR STRING DATA
 class BarChart {
   constructor(_config, _data, attribute, descriptionFunction) {
     this.config = {
@@ -78,7 +77,10 @@ class BarChart {
             id: vis.filterId,
             column: vis.attribute,
             range: range,
-            description: vis.descriptionFunction(vis.attribute, range),
+            description: vis.descriptionFunction(
+              vis.attribute,
+              vis.getCategoriesInRange(range)
+            ),
           }); // update the filter
         }
       });
@@ -261,6 +263,13 @@ class BarChart {
 
     // get sum
     this.sum = d3.sum(this.data, (d) => d.count);
+  }
+
+  getCategoriesInRange(range) {
+    let cats = this.data.filter(
+      (d) => range[0] <= d.attribute && d.attribute <= range[1]
+    );
+    return cats.map((d) => d.attribute);
   }
 
   resetBrushArea() {
