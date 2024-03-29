@@ -125,6 +125,7 @@ d3.csv("data/ufo_sightings.csv")
         containerHeight: 500,
         numBins: 50,
         quantileLimit: 0.95, // how much to tighten the quantiles
+        yScale: d3.scaleSqrt,
       },
       processedData,
       "encounterLength",
@@ -146,6 +147,7 @@ d3.csv("data/ufo_sightings.csv")
       },
       processedData,
       "shape",
+      (d) => d,
       (column, range) =>
         `Shape filtered to show only sightings with shape ${joinArray(
           range,

@@ -20,6 +20,8 @@ class HistogramChart {
       quantileLimit: _config.quantileLimit || 0,
       accentColor: _config.accentColor || "#FFB400",
       normalColor: _config.normalColor || "#69b3a2",
+      xScale: _config.xScale || d3.scaleLinear,
+      yScale: _config.yScale || d3.scaleLinear,
       yPadding: 0.1, // padding for the y-axis (percentage of the range)
       barGap: 0.5, // gap between bars
     };
@@ -104,15 +106,15 @@ class HistogramChart {
     vis.bins = vis.histogram(vis.data);
 
     // we need to create a scale for the x-axis
-    vis.x = d3
-      .scaleLinear()
+    vis.x = vis.config
+      .xScale()
       .domain(d3.extent(vis.data, vis.getterFunction))
       .range([vis.config.margin.left, vis.width - vis.config.margin.right]);
 
     // we need to create a scale for the y-axis
 
-    vis.y = d3
-      .scaleLinear()
+    vis.y = vis.config
+      .yScale()
       .domain([0, d3.max(vis.bins, (d) => d.length)])
       .range([
         vis.height - vis.config.margin.bottom,

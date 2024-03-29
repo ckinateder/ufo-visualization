@@ -1,6 +1,12 @@
 // THIS IS FOR STRING DATA
 class BarChart {
-  constructor(_config, _data, attribute, descriptionFunction) {
+  constructor(
+    _config,
+    _data,
+    attribute,
+    transformFunction,
+    descriptionFunction
+  ) {
     this.config = {
       title: _config.title || "Histogram",
       xAxisLabel: _config.xAxisLabel || "x-axis",
@@ -11,6 +17,8 @@ class BarChart {
       containerHeight: _config.containerHeight || 500,
       margin: { top: 50, bottom: 55, right: 10, left: 60 },
       quantileLimit: _config.quantileLimit || 0,
+      xScale: _config.xScale || d3.scaleBand,
+      yScale: _config.yScale || d3.scaleSqrt,
       accentColor: _config.accentColor || "#FFB400",
       normalColor: _config.normalColor || "#69b3a2",
       yPadding: 0.1, // padding for the y-axis (percentage of the range)
@@ -19,7 +27,7 @@ class BarChart {
 
     // make a filter id for this chart, must be unique (use date.now())
     this.filterId = `${attribute}-${Date.now().toString(36)}`;
-    this.setData(_data, attribute, descriptionFunction);
+    this.setData(_data, attribute, transformFunction, descriptionFunction);
 
     // Call a class function
     this.initVis();
@@ -77,6 +85,7 @@ class BarChart {
             id: vis.filterId,
             column: vis.attribute,
             range: range,
+            transformation: vis.transformFunction,
             description: vis.descriptionFunction(
               vis.attribute,
               vis.getCategoriesInRange(range)
@@ -89,15 +98,15 @@ class BarChart {
     vis.brushArea = vis.svg.append("g").attr("class", "brush").call(vis.brush);
 
     // X axis
-    vis.x = d3
-      .scaleBand()
+    vis.x = vis.config
+      .xScale()
       .domain(vis.data.map((d) => d.attribute))
       .padding(0.2)
       .range([vis.config.margin.left, vis.width - vis.config.margin.right]);
 
     // Add Y axis
-    vis.y = d3
-      .scaleSqrt()
+    vis.y = vis.config
+      .yScale()
       .domain([0, d3.max(vis.data, (d) => d.count)])
       .range([
         vis.height - vis.config.margin.bottom,
@@ -241,12 +250,16 @@ class BarChart {
         );
     }
   }
-  setData(newData, attribute, descriptionFunction) {
+  setData(newData, attribute, transformFunction, descriptionFunction) {
     if (descriptionFunction === undefined) {
       descriptionFunction = (c, r) => `${c} in [${r[0]}, ${r[1]}]`;
     }
     this.descriptionFunction = descriptionFunction;
-    this.getterFunction = (d) => d[attribute];
+    if (transformFunction === undefined) {
+      transformFunction = (d) => d;
+    }
+    this.getterFunction = (d) => transformFunction(d[attribute]);
+    this.transformFunction = transformFunction;
     this.attribute = attribute;
 
     // create a dataset that counts the number of times each attribute appears
