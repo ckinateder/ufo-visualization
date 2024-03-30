@@ -291,7 +291,11 @@ class HistogramChart {
   resetBrushArea() {
     let vis = this;
     if (vis.brushArea) {
-      vis.brushArea.call(vis.brush).call(vis.brush.move, null);
+      vis.brushArea = vis.brushArea.remove();
+      vis.brushArea = vis.svg
+        .append("g")
+        .attr("class", "brush")
+        .call(vis.brush);
     }
   }
 }
