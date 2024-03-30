@@ -113,7 +113,8 @@ d3.csv("data/ufo_sightings.csv")
           range[1]
         )}.`
     );
-
+    wrdcloud = new Wordcloud;
+    wrdcloud.initVis();
     // Chart with sightings by encounter length
     let encounterLengthGetter = (d) => d.encounterLength;
     encounterLengthChart = new HistogramChart(
