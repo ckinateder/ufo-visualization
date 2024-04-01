@@ -50,7 +50,7 @@ d3.csv("data/ufo_sightings.csv")
     });
 
     // random sample of a test set - CHANGE THIS TO THE FULL DATASET
-    let dataSize = data.length / 3;
+    let dataSize = data.length / 4;
     processedData = processedData
       .sort(() => Math.random() - Math.random())
       .slice(0, dataSize);
