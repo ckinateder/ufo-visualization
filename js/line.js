@@ -9,8 +9,8 @@ class TimeLineChart {
       containerWidth: _config.containerWidth || 1200,
       containerHeight: _config.containerHeight || 500,
       margin: { top: 50, bottom: 55, right: 10, left: 60 },
-      accentColor: _config.accentColor || "#FFB400",
-      normalColor: _config.normalColor || "#69b3a2",
+      accentColor: _config.accentColor || defaultAccentColor,
+      normalColor: _config.normalColor || defaultNormalColor,
     };
 
     this.filterId = `${dateColumn}-${Date.now().toString(36)}`;

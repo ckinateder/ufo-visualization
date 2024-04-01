@@ -19,8 +19,8 @@ class BarChart {
       quantileLimit: _config.quantileLimit || 0,
       xScale: _config.xScale || d3.scaleBand,
       yScale: _config.yScale || d3.scaleSqrt,
-      accentColor: _config.accentColor || "#FFB400",
-      normalColor: _config.normalColor || "#69b3a2",
+      accentColor: _config.accentColor || defaultAccentColor,
+      normalColor: _config.normalColor || defaultNormalColor,
       yPadding: 0.1, // padding for the y-axis (percentage of the range)
       barGap: 0.5, // gap between bars
     };

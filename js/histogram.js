@@ -18,8 +18,8 @@ class HistogramChart {
       containerHeight: _config.containerHeight || 500,
       margin: { top: 50, bottom: 55, right: 10, left: 60 },
       quantileLimit: _config.quantileLimit || 0,
-      accentColor: _config.accentColor || "#FFB400",
-      normalColor: _config.normalColor || "#69b3a2",
+      accentColor: _config.accentColor || defaultAccentColor,
+      normalColor: _config.normalColor || defaultNormalColor,
       xScale: _config.xScale || d3.scaleLinear,
       yScale: _config.yScale || d3.scaleLinear,
       yPadding: 0.1, // padding for the y-axis (percentage of the range)

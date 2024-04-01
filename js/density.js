@@ -10,7 +10,7 @@ class DensityChart {
       containerHeight: _config.containerHeight || 500,
       margin: { top: 50, bottom: 55, right: 10, left: 60 },
       quantileLimit: _config.quantileLimit || 0,
-      accentColor: _config.accentColor || "#FFB400",
+      accentColor: _config.accentColor || defaultAccentColor,
       normalColor: _config.normalColor || "#69b3a2",
     };
     this.setData(_data, getterFunction);

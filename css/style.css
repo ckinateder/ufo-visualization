@@ -17,6 +17,13 @@
   height: fit-content;
   border: #333 1px solid;
 }
+#filter-container {
+  width: fit-content;
+}
+.filter-item {
+  display: flex;
+  align-items: center;
+}
 
 #tooltip {
   position: absolute;

@@ -8,6 +8,9 @@ let leafletMap,
   processedData,
   dataFilter,
   chartList;
+
+const defaultNormalColor = "#61a4ba";
+const defaultAccentColor = "#FFB400";
 /**
  * timeRange is a global variable that holds the range of dates that the user has selected.
  */
@@ -244,13 +247,13 @@ removeFilter = (filterId) => {
 function renderFilter() {
   // render the filters applied
   // iterate through the dataFilter and render the filters
-  const filterList = d3.select("#filter-list");
+  const filterList = d3.select("#filter-container");
 
   filterList
-    .selectAll(".filter")
+    .selectAll(".filter-item")
     .data(dataFilter)
     .join("div")
-    .attr("class", "filter")
+    .attr("class", "filter-item")
     .text((d) => d.description)
     .on("click", (event, d) => {
       removeFilter(d.id);
