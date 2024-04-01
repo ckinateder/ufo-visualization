@@ -18,8 +18,6 @@ class HistogramChart {
       containerHeight: _config.containerHeight || 500,
       margin: { top: 50, bottom: 55, right: 10, left: 60 },
       quantileLimit: _config.quantileLimit || 0,
-      accentColor: _config.accentColor || defaultAccentColor,
-      normalColor: _config.normalColor || defaultNormalColor,
       xScale: _config.xScale || d3.scaleLinear,
       yScale: _config.yScale || d3.scaleLinear,
       yPadding: 0.1, // padding for the y-axis (percentage of the range)
@@ -136,13 +134,13 @@ class HistogramChart {
         "height",
         (d) => vis.height - vis.config.margin.bottom - vis.y(d.length)
       )
-      .attr("fill", vis.config.normalColor);
+      .attr("fill", normalColor);
 
     // add tooltips
     vis.bars
       .on("mouseover", function (event, d) {})
       .on("mousemove", function (event, d) {
-        d3.select(this).attr("fill", vis.config.accentColor);
+        d3.select(this).attr("fill", accentColor);
 
         let tooltipHtml = `<div class="tooltip-label"><strong>Range: </strong>${d.x0} - ${d.x1}</div>`;
         tooltipHtml += `<div class="tooltip-label"><strong>Count: </strong>${d.length}</div>`;
@@ -158,7 +156,7 @@ class HistogramChart {
       })
       .on("mouseout", function (event, d) {
         d3.select("#tooltip").style("opacity", 0);
-        d3.select(this).attr("fill", vis.config.normalColor);
+        d3.select(this).attr("fill", normalColor);
       });
 
     // Make xAxis svg element using the x-scale.
@@ -241,7 +239,7 @@ class HistogramChart {
       .append("rect")
       .attr("width", 10)
       .attr("height", 10)
-      .attr("fill", vis.config.normalColor);
+      .attr("fill", normalColor);
     vis.legend.append("text").attr("x", 15).attr("y", 10).text("Count");
     */
     if (vis.config.quantileLimit > 0) {

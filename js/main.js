@@ -1,13 +1,18 @@
 let leafletMap,
   timeline,
   hourChart,
+  dayChart,
+  encounterLengthChart,
+  shapeChart,
   timeRange,
   globalData,
   defaultData,
   coloring,
   processedData,
   dataFilter,
-  chartList;
+  chartList,
+  normalColor,
+  accentColor;
 
 const defaultNormalColor = "#61a4ba";
 const defaultAccentColor = "#FFB400";
@@ -49,6 +54,10 @@ d3.csv("data/ufo_sightings.csv")
     processedData = processedData
       .sort(() => Math.random() - Math.random())
       .slice(0, dataSize);
+
+    // set color scheme
+    normalColor = defaultNormalColor;
+    accentColor = defaultAccentColor;
 
     //set the global data variable
 

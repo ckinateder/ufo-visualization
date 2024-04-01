@@ -9,8 +9,6 @@ class TimeLineChart {
       containerWidth: _config.containerWidth || 1200,
       containerHeight: _config.containerHeight || 500,
       margin: { top: 50, bottom: 55, right: 10, left: 60 },
-      accentColor: _config.accentColor || defaultAccentColor,
-      normalColor: _config.normalColor || defaultNormalColor,
     };
 
     this.filterId = `${dateColumn}-${Date.now().toString(36)}`;
@@ -148,7 +146,7 @@ class TimeLineChart {
       .selectAll("circle")
       .data(vis.dataByMonth)
       .join("circle")
-      .attr("fill", vis.config.normalColor)
+      .attr("fill", normalColor)
       .attr("r", 2)
       .attr("cx", (d) => vis.x(xValue(d)))
       .attr("cy", (d) => vis.y(yValue(d)));
@@ -159,7 +157,7 @@ class TimeLineChart {
       .datum(vis.dataByMonth)
       .join("path")
       .attr("fill", "none")
-      .attr("stroke", vis.config.normalColor)
+      .attr("stroke", normalColor)
       .attr("stroke-width", 1.5)
       .attr(
         "d",
@@ -175,7 +173,7 @@ class TimeLineChart {
         d3.select(this)
           .transition()
           .duration("50")
-          .attr("fill", vis.config.accentColor)
+          .attr("fill", accentColor)
           .attr("r", 4);
 
         let tooltipHtml = `<div class="tooltip-label"><strong>Month: </strong>${d[
@@ -199,7 +197,7 @@ class TimeLineChart {
         d3.select(this)
           .transition()
           .duration("150")
-          .attr("fill", vis.config.normalColor)
+          .attr("fill", normalColor)
           .attr("r", 2);
 
         d3.select("#tooltip").style("opacity", 0);

@@ -194,7 +194,7 @@ class DensityChart {
         .append("rect")
         .attr("width", 10)
         .attr("height", 10)
-        .attr("fill", vis.config.normalColor);
+        .attr("fill", normalColor);
       vis.legend.append("text").attr("x", 15).attr("y", 10).text("Count");
       */
     if (vis.config.quantileLimit > 0) {
