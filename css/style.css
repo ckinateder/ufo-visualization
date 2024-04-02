@@ -7,6 +7,7 @@
   justify-content: left;
   border: #333 1px solid;
   width: min-content;
+  height: 1050px;
 }
 
 /*A-VIEW is for the main map and timeline*/
@@ -16,12 +17,18 @@
 .b-view-container {
   padding: 5px;
   overflow: scroll;
-  height: 1050px;
+  overflow-x: hidden; /* Hide horizontal scrollbar */
 }
 .a-view {
   width: 950px;
   height: fit-content;
   border-right: #333 1px solid;
+}
+#ufo-wordcloud {
+  border-top: #333 1px solid;
+}
+#ufo-shape-trends {
+  border-bottom: none;
 }
 /*B-VIEW is for the trends and supplemental views*/
 .b-view {
