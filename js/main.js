@@ -12,7 +12,8 @@ let leafletMap,
   dataFilter,
   chartList,
   normalColor,
-  accentColor;
+  accentColor,
+  wrdcloud;
 
 const defaultNormalColor = "#61a4ba";
 const defaultAccentColor = "#FFB400";
@@ -79,7 +80,7 @@ d3.csv("data/ufo_sightings.csv")
       {
         parentElement: "#ufo-timeline",
         containerWidth: 1200,
-        containerHeight: 400,
+        containerHeight: 500,
       },
       processedData,
       "date_time",
@@ -252,6 +253,7 @@ function updateFilter(filter) {
   console.log(dataFilter);
   renderFilter();
   updateLeafletMap(); // update the leaflet map
+  wrdcloud.updateVis();
 }
 
 removeFilter = (filterId) => {
@@ -261,6 +263,7 @@ removeFilter = (filterId) => {
   );
   renderFilter();
   updateLeafletMap();
+  wrdcloud.updateVis();
 };
 
 function renderFilter() {

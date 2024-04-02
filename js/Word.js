@@ -37,6 +37,12 @@ class Wordcloud {
   updateVis() {
     // List of words
     let vis = this;
+    // clear the svg
+    vis.svg.selectAll("*").remove();
+
+    // only data inFilter
+    vis.data = vis.data.filter((d) => inFilter(d));
+
     var myWords = vis.data.map(vis.getterFunction);
 
     var wrdCloudArray = vis.getWordsByFrequency(myWords);
