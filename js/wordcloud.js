@@ -6,8 +6,8 @@ class WordCloud {
       colorScale: _config.colorScale,
       containerWidth: _config.containerWidth || 260,
       containerHeight: _config.containerHeight || 300,
-      margin: { top: 50, bottom: 55, right: 10, left: 60 },
-      numWords: _config.numWords || 75,
+      margin: { top: 50, bottom: 10, right: 10, left: 60 },
+      numWords: _config.numWords || 50,
       title: _config.title || "Word Cloud",
     };
     this.setData(_data, attribute, transformFunction);
