@@ -108,7 +108,6 @@ d3.csv("data/ufo_sightings.csv")
     );
 
     // Chart with sightings by day of year
-    let dayGetter = (d) => getDayOfYear(d.date_time);
     dayChart = new HistogramChart(
       {
         parentElement: "#ufo-day-trends",
@@ -126,22 +125,6 @@ d3.csv("data/ufo_sightings.csv")
           range[1]
         )}.`
     );
-    wrdcloud = new Wordcloud(
-      {
-        parentElement: "#ufo-wordcloud",
-        title: "Word Cloud based on Descriptions",
-        containerWidth: 1200,
-        containerHeight: 500,
-      },
-      processedData,
-      "date_time",
-      getDayOfYear,
-      (column, range) =>
-        `Day of year filtered between ${Math.round(range[0])} and ${Math.round(
-          range[1]
-        )}.`
-    );
-    
     // Chart with sightings by encounter length
     let encounterLengthGetter = (d) => d.encounterLength;
     encounterLengthChart = new HistogramChart(
@@ -181,6 +164,18 @@ d3.csv("data/ufo_sightings.csv")
           range,
           "or"
         )}.`
+    );
+
+    wrdcloud = new Wordcloud(
+      {
+        parentElement: "#ufo-wordcloud",
+        title: "Word Cloud based on Descriptions",
+        containerWidth: 1200,
+        containerHeight: 500,
+      },
+      processedData,
+      "description",
+      (d) => d
     );
 
     // add all the charts to the chartList (except the map, which is updated separately)
