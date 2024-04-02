@@ -167,7 +167,7 @@ d3.csv("data/ufo_sightings.csv")
         )}.`
     );
 
-    wrdcloud = new Wordcloud(
+    wrdcloud = new WordCloud(
       {
         parentElement: "#ufo-wordcloud",
         title: "Word Cloud based on Descriptions",

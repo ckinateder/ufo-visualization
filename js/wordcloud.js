@@ -1,4 +1,4 @@
-class Wordcloud {
+class WordCloud {
   constructor(_config, _data, attribute, transformFunction) {
     // Configuration object with defaults
     this.config = {
@@ -48,7 +48,7 @@ class Wordcloud {
     var wrdCloudArray = vis.getWordsByFrequency(myWords);
 
     // Constructs a new cloud layout instance. It run an algorithm to find the position of words that suits your requirements
-    // Wordcloud features that are different from one word to the other must be here
+    // WordCloud features that are different from one word to the other must be here
     vis.layout = d3.layout
       .cloud()
       .size([vis.width, vis.height])
@@ -62,7 +62,7 @@ class Wordcloud {
       .fontSize((d) => d.size) // font size of words
       .on("end", (words) => {
         // This function takes the output of 'layout' above and draw the words
-        // Wordcloud features that are THE SAME from one word to the other can be here
+        // WordCloud features that are THE SAME from one word to the other can be here
         vis.svg
           .append("g")
           .attr(
