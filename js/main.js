@@ -75,12 +75,15 @@ d3.csv("data/ufo_sightings.csv")
     // Initialize chart and then show it
     leafletMap = new LeafletMap({ parentElement: "#ufo-map" }, processedData);
 
+    let containerWidth = 950;
+    let containerHeight = 500;
+
     // Timeline chart with the sightings by month
     timeline = new TimeLineChart(
       {
         parentElement: "#ufo-timeline",
-        containerWidth: 1200,
-        containerHeight: 500,
+        containerWidth: containerWidth,
+        containerHeight: containerHeight,
       },
       processedData,
       "date_time",
@@ -95,8 +98,8 @@ d3.csv("data/ufo_sightings.csv")
         parentElement: "#ufo-hour-trends",
         title: "Distribution of Sightings by Hour",
         xAxisLabel: "Hour",
-        containerWidth: 1200,
-        containerHeight: 500,
+        containerWidth: containerWidth,
+        containerHeight: containerHeight,
         numBins: 24,
       },
       processedData,
@@ -114,8 +117,8 @@ d3.csv("data/ufo_sightings.csv")
         parentElement: "#ufo-day-trends",
         title: "Distribution of Sightings by Day of Year",
         xAxisLabel: "Day of Year",
-        containerWidth: 1200,
-        containerHeight: 500,
+        containerWidth: containerWidth,
+        containerHeight: containerHeight,
         numBins: 183,
       },
       processedData,
@@ -133,8 +136,8 @@ d3.csv("data/ufo_sightings.csv")
         parentElement: "#ufo-encounter-length-trends",
         title: "Distribution of Sightings by Encounter Length",
         xAxisLabel: "Encounter Length (s)",
-        containerWidth: 1200,
-        containerHeight: 500,
+        containerWidth: containerWidth,
+        containerHeight: containerHeight,
         numBins: 50,
         quantileLimit: 0.95, // how much to tighten the quantiles
         yScale: d3.scaleSqrt,
@@ -154,8 +157,8 @@ d3.csv("data/ufo_sightings.csv")
         parentElement: "#ufo-shape-trends",
         title: "Distribution of Sightings by Shape",
         xAxisLabel: "Shape",
-        containerWidth: 1200,
-        containerHeight: 500,
+        containerWidth: containerWidth,
+        containerHeight: containerHeight,
       },
       processedData,
       "shape",
@@ -171,8 +174,8 @@ d3.csv("data/ufo_sightings.csv")
       {
         parentElement: "#ufo-wordcloud",
         title: "Word Cloud based on Descriptions",
-        containerWidth: 1200,
-        containerHeight: 500,
+        containerWidth: containerWidth,
+        containerHeight: containerHeight,
       },
       processedData,
       "description",

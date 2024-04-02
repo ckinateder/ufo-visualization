@@ -19,24 +19,24 @@
         <select id="coloring"></select>
       </span>
       <button id="reset">Reset</button>
+      <div id="filter-container"></div>
     </div>
 
-    <div id="filter-container"></div>
-    <div id="colorscale-container"></div>
+    <div class="side-by">
+      <div class="a-view-container">
+        <div id="ufo-map" class="a-view"></div>
+        <div id="ufo-wordcloud" class="a-view"></div>
+        <div id="colorscale-container"></div>
+      </div>
 
-    <div class="a-view-container">
-      <div id="ufo-map" class="a-view"></div>
-      <div id="ufo-timeline" class="a-view"></div>
+      <div class="b-view-container">
+        <div id="ufo-timeline" class="b-view"></div>
+        <div id="ufo-hour-trends" class="b-view"></div>
+        <div id="ufo-day-trends" class="b-view"></div>
+        <div id="ufo-encounter-length-trends" class="b-view"></div>
+        <div id="ufo-shape-trends" class="b-view"></div>
+      </div>
     </div>
-
-    <div class="b-view-container">
-      <div id="ufo-wordcloud" class="b-view"></div>
-      <div id="ufo-hour-trends" class="b-view"></div>
-      <div id="ufo-day-trends" class="b-view"></div>
-      <div id="ufo-encounter-length-trends" class="b-view"></div>
-      <div id="ufo-shape-trends" class="b-view"></div>
-    </div>
-
     <script src="js/d3.v6.min.js"></script>
     <script src="js/leaflet.js"></script>
 
