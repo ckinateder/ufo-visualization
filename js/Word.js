@@ -1,33 +1,67 @@
 class Wordcloud {
-    initVis(){
+  constructor(_config, _data) {
+    // Configuration object with defaults
+    this.config = {
+      parentElement: _config.parentElement,
+      colorScale: _config.colorScale,
+      containerWidth: _config.containerWidth || 260,
+      containerHeight: _config.containerHeight || 300,
+      margin: _config.margin || {top: 25, right: 20, bottom: 20, left: 40},
+    }
+    this.data = _data;
+    this.initVis();
+  }
+initVis(){
         // List of words
-var myWords = [{word: "Running", size: "10"}, {word: "Surfing", size: "20"}, {word: "Climbing", size: "50"}, {word: "Kiting", size: "30"}, {word: "Sailing", size: "20"}, {word: "Snowboarding", size: "60"} ]
+let vis=this;
+var myWords = vis.data.map(function(d) {
+  return d.description;
+});
 function getWordsByFrequency(texts) {
-    // Object to store word frequencies
-    const wordFreq = {};
+  // Define the list of words to exclude
+  const excludedWords = ["the", "in", "a", "and", "of", "to", "i", "at", "it"];
 
-    // Tokenize each text and count word occurrences
-    texts.forEach(text => {
-        const words = text.toLowerCase().split(/\W+/);
-        words.forEach(word => {
-            if (word !== "") {
-                if (wordFreq[word]) {
-                    wordFreq[word]++;
-                } else {
-                    wordFreq[word] = 1;
-                }
-            }
-        });
-    });
+  // Object to store word frequencies
+  const wordFreq = {};
 
-    // Convert object to array of {text, size} objects
-    const wordFreqArray = Object.keys(wordFreq).map(word => ({ text: word, size: wordFreq[word] }));
+  // Register each text and count word occurrences
+  texts.forEach(text => {
+      const words = text.toLowerCase().split(/\W+/);
+      words.forEach(word => {
+          if (word !== "" && !excludedWords.includes(word)) { // Check if the word is not in the excluded list
+              if (wordFreq[word]) {
+                  wordFreq[word]++;
+              } else {
+                  wordFreq[word] = 1;
+              }
+          }
+      });
+  });
 
-    // Sort by frequency (descending)
-    wordFreqArray.sort((a, b) => b.size - a.size);
+  // Convert object to array of {text, size} objects
+  const wordFreqArray = Object.keys(wordFreq).map(word => ({ text: word, size: wordFreq[word] }));
 
-    return wordFreqArray;
+  // Sort by frequency (descending)
+  wordFreqArray.sort((a, b) => b.size - a.size);
+
+  // Calculate the sum of the top sizes
+  let sumOfTopSizes = 0;
+  let numWrds =35;
+  for (let i = 0; i < Math.min(wordFreqArray.length, numWrds); i++) {
+      sumOfTopSizes += wordFreqArray[i].size;
+  }
+
+  // Update sizes with percentage of the sum
+  for (let i = 0; i < Math.min(wordFreqArray.length, numWrds); i++) {
+      wordFreqArray[i].size = (wordFreqArray[i].size / sumOfTopSizes) * 1000;
+  }
+
+  return wordFreqArray.slice(0, numWrds);
+
 }
+
+var wrdCloudArray = getWordsByFrequency(myWords);
+console.log(wrdCloudArray);
 // set the dimensions and margins of the graph
 var margin = {top: 10, right: 10, bottom: 10, left: 10},
     width = 450 - margin.left - margin.right,
@@ -45,7 +79,7 @@ var svg = d3.select("#ufo-wordcloud").append("svg")
 // Wordcloud features that are different from one word to the other must be here
 var layout = d3.layout.cloud()
   .size([width, height])
-  .words(myWords.map(function(d) { return {text: d.word, size:d.size}; }))
+  .words(wrdCloudArray.map(function(d) { return {text: d.text, size:d.size}; }))
   .padding(5)        //space between words
   .rotate(function() { return ~~(Math.random() * 2) * 90; })
   .fontSize(function(d) { return d.size; })      // font size of words

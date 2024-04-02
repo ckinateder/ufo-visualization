@@ -113,8 +113,22 @@ d3.csv("data/ufo_sightings.csv")
           range[1]
         )}.`
     );
-    wrdcloud = new Wordcloud;
-    wrdcloud.initVis();
+    wrdcloud = new Wordcloud(
+      {
+        parentElement: "#ufo-wordcloud",
+        title: "Word Cloud based on Descriptions",
+        containerWidth: 1200,
+        containerHeight: 500,
+      },
+      processedData,
+      "date_time",
+      getDayOfYear,
+      (column, range) =>
+        `Day of year filtered between ${Math.round(range[0])} and ${Math.round(
+          range[1]
+        )}.`
+    );
+    
     // Chart with sightings by encounter length
     let encounterLengthGetter = (d) => d.encounterLength;
     encounterLengthChart = new HistogramChart(
