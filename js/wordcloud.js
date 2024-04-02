@@ -41,11 +41,11 @@ class WordCloud {
     vis.svg.selectAll("*").remove();
 
     // only data inFilter
-    vis.data = vis.data.filter((d) => inFilter(d));
+    let data = vis.data.filter((d) => inFilter(d));
 
-    var myWords = vis.data.map(vis.getterFunction);
+    let myWords = data.map(vis.getterFunction);
 
-    var wrdCloudArray = vis.getWordsByFrequency(myWords);
+    let wrdCloudArray = vis.getWordsByFrequency(myWords);
 
     // Constructs a new cloud layout instance. It run an algorithm to find the position of words that suits your requirements
     // WordCloud features that are different from one word to the other must be here
@@ -100,7 +100,7 @@ class WordCloud {
             let tooltipHtml = `<div class="tooltip-label"><strong>Word: </strong>${d.text}</div>`;
             tooltipHtml += `<div class="tooltip-label"><strong>Count: </strong>${d.count}</div>`;
             tooltipHtml += `<div class="tooltip-label"><strong>Percentage: </strong>${(
-              (d.count / vis.data.length) *
+              (d.count / data.length) *
               100
             ).toFixed(2)}%</div>`;
 
