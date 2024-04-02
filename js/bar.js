@@ -19,8 +19,6 @@ class BarChart {
       quantileLimit: _config.quantileLimit || 0,
       xScale: _config.xScale || d3.scaleBand,
       yScale: _config.yScale || d3.scaleSqrt,
-      accentColor: _config.accentColor || "#FFB400",
-      normalColor: _config.normalColor || "#69b3a2",
       yPadding: 0.1, // padding for the y-axis (percentage of the range)
       barGap: 0.5, // gap between bars
     };
@@ -128,12 +126,12 @@ class BarChart {
         "height",
         (d) => vis.height - vis.config.margin.bottom - vis.y(d.count)
       )
-      .attr("fill", vis.config.normalColor);
+      .attr("fill", normalColor);
     // add tooltips
     vis.bars
       .on("mouseover", function (event, d) {})
       .on("mousemove", function (event, d) {
-        d3.select(this).attr("fill", vis.config.accentColor);
+        d3.select(this).attr("fill", accentColor);
         let tooltipHtml = `<div class="tooltip-label"><strong>Shape: </strong>${d.attribute}<br>`;
         tooltipHtml += `<strong>Count: </strong>${d.count}<br>`;
         tooltipHtml += `<strong>Percentage: </strong>${(
@@ -149,7 +147,7 @@ class BarChart {
       })
       .on("mouseout", function (event, d) {
         d3.select("#tooltip").style("opacity", 0);
-        d3.select(this).attr("fill", vis.config.normalColor);
+        d3.select(this).attr("fill", normalColor);
       });
     // Make xAxis svg element using the x-scale.
     vis.xAxis = d3.axisBottom(vis.x);
@@ -235,7 +233,7 @@ class BarChart {
         .append("rect")
         .attr("width", 10)
         .attr("height", 10)
-        .attr("fill", vis.config.normalColor);
+        .attr("fill", normalColor);
       vis.legend.append("text").attr("x", 15).attr("y", 10).text("Count");
       */
     if (vis.config.quantileLimit > 0) {
@@ -288,7 +286,11 @@ class BarChart {
   resetBrushArea() {
     let vis = this;
     if (vis.brushArea) {
-      vis.brushArea.call(vis.brush).call(vis.brush.move, null);
+      vis.brushArea = vis.brushArea.remove();
+      vis.brushArea = vis.svg
+        .append("g")
+        .attr("class", "brush")
+        .call(vis.brush);
     }
   }
 }

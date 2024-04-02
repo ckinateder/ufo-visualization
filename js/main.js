@@ -1,12 +1,21 @@
 let leafletMap,
   timeline,
   hourChart,
+  dayChart,
+  encounterLengthChart,
+  shapeChart,
   timeRange,
   globalData,
   defaultData,
   coloring,
   processedData,
-  dataFilter;
+  dataFilter,
+  chartList,
+  normalColor,
+  accentColor;
+
+const defaultNormalColor = "#61a4ba";
+const defaultAccentColor = "#FFB400";
 /**
  * timeRange is a global variable that holds the range of dates that the user has selected.
  */
@@ -41,10 +50,14 @@ d3.csv("data/ufo_sightings.csv")
     });
 
     // random sample of a test set - CHANGE THIS TO THE FULL DATASET
-    let dataSize = data.length / 3;
+    let dataSize = data.length / 4;
     processedData = processedData
       .sort(() => Math.random() - Math.random())
       .slice(0, dataSize);
+
+    // set color scheme
+    normalColor = defaultNormalColor;
+    accentColor = defaultAccentColor;
 
     //set the global data variable
 
@@ -103,7 +116,7 @@ d3.csv("data/ufo_sightings.csv")
         xAxisLabel: "Day of Year",
         containerWidth: 1200,
         containerHeight: 500,
-        numBins: 366,
+        numBins: 183,
       },
       processedData,
       "date_time",
@@ -170,6 +183,15 @@ d3.csv("data/ufo_sightings.csv")
         )}.`
     );
 
+    // add all the charts to the chartList (except the map, which is updated separately)
+    chartList = [
+      timeline,
+      hourChart,
+      dayChart,
+      encounterLengthChart,
+      shapeChart,
+    ];
+
     // SETTING UP THE CONTROL PANEL
 
     // fill coloring dropdown
@@ -235,13 +257,13 @@ function updateFilter(filter) {
   console.log(dataFilter);
   renderFilter();
   updateLeafletMap(); // update the leaflet map
-  // TODO - html element with showing the filters applied
 }
 
 removeFilter = (filterId) => {
   dataFilter = dataFilter.filter((d) => d.id != filterId);
-  console.log(`Removed filter '${filterId}'`);
-  console.log(dataFilter);
+  console.log(
+    `Removed filter '${filterId}', now ${dataFilter.length} filters.`
+  );
   renderFilter();
   updateLeafletMap();
 };
@@ -249,15 +271,31 @@ removeFilter = (filterId) => {
 function renderFilter() {
   // render the filters applied
   // iterate through the dataFilter and render the filters
-  let html = "";
-  for (let i = 0; i < dataFilter.length; i++) {
-    let filter = dataFilter[i];
-    html += `<div class="filter">
-      <span>${filter.description}</span>
-    </div>`;
-  }
+  const filterList = d3.select("#filter-container");
 
-  d3.select("#filter-list").html(html);
+  filterList
+    .selectAll(".filter-item")
+    .data(dataFilter)
+    .join("div")
+    .attr("class", "filter-item")
+    .text((d) => d.description)
+    .on("click", (event, d) => {
+      removeFilter(d.id);
+      getChartById(d.id).resetBrushArea();
+    })
+    .on("mouseover", (event, d) => {
+      // set the cursor to pointer
+      d3.select(event.currentTarget).style("cursor", "pointer");
+      // set style to strike through with a transition duration of 0.2s
+      d3.select(event.currentTarget).style("text-decoration", "line-through");
+    })
+    .on("mouseout", (event, d) => {
+      // reset the cursor
+      d3.select(event.currentTarget).style("cursor", "default");
+
+      // reset the style
+      d3.select(event.currentTarget).style("text-decoration", "none");
+    });
 }
 
 function inFilter(d) {
@@ -290,21 +328,37 @@ function resetAll() {
   // reset map
   leafletMap.resetMap();
 
-  // reset the brush area
+  // reset the brush areas
+  resetAllBrushAreas();
+
+  // reset the filter list
+  renderFilter();
 
   // update the visualizations
   updateAll();
 }
+
+// get the chart by id
+function getChartById(id) {
+  for (let chart of chartList) {
+    if (chart.filterId == id) {
+      return chart;
+    }
+  }
+  return null;
+}
+
+// reset all brush areas
 function resetAllBrushAreas() {
   // reset the brush area
-  for (let chart of [timeline, hourChart, dayChart, encounterLengthChart]) {
+  for (let chart of chartList) {
     chart.resetBrushArea();
   }
 }
 
 function updateAll() {
   updateLeafletMap();
-  for (let chart of [timeline, hourChart, dayChart, encounterLengthChart]) {
+  for (let chart of chartList) {
     chart.updateVis();
   }
 }

@@ -196,17 +196,17 @@ class LeafletMap {
         .interpolator(d3.interpolateViridis);
     } else if (coloring === "shape") {
       // oval, triangle, circle, etc.
+      // sort by alphabetical order first
       this.colorBy = (d) => d.shape;
       this.colorScale = d3
         .scaleOrdinal()
         .domain(
           this.data
             .map((d) => d.shape)
-            .filter((value, index, self) => {
-              return self.indexOf(value) === index;
-            })
+            .filter((d, i, self) => self.indexOf(d) === i)
+            .sort()
         )
-        .range(d3.schemeCategory10);
+        .range(d3.schemeTableau10);
     } else {
       // default to year
       this.colorBy = (d) => d.date_time.getFullYear();

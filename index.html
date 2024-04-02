@@ -2,35 +2,41 @@
 <html>
   <head>
     <title>Interactive map with Leaflet</title>
-    <link rel="icon" href="data:;base64,iVBORwOKGO=" />
     <link rel="stylesheet" href="css/leaflet.css" />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js"></script>
   </head>
   <body>
     <div class="controls">
-      <!-- dropdown for coloring -->
       <span>
         Coloring:
-        <select id="coloring"></select
-      ></span>
+        <select id="coloring"></select>
+      </span>
       <button id="reset">Reset</button>
     </div>
-    <div id="filter-list"></div>
+    <div id="filter-container"></div>
 
-    <div class="vertical-stack-parent">
+    <div class="a-view-container">
       <div id="ufo-map" class="a-view"></div>
       <div id="ufo-timeline" class="a-view"></div>
+    </div>
 
+    <div class="b-view-container">
       <div id="ufo-hour-trends" class="b-view"></div>
       <div id="ufo-day-trends" class="b-view"></div>
       <div id="ufo-encounter-length-trends" class="b-view"></div>
       <div id="ufo-shape-trends" class="b-view"></div>
     </div>
-    <div id="colorscale-visualizer"></div>
+
+    <div id="colorscale-container"></div>
 
     <div id="ufo-wordcloud"></div>
-
 
     <script src="js/d3.v6.min.js"></script>
     <script src="js/leaflet.js"></script>
@@ -43,7 +49,6 @@
     <script src="js/density.js"></script>
     <script src="js/bar.js"></script>
     <script src="js/Word.js"></script>
-
 
     <div id="tooltip"></div>
   </body>
