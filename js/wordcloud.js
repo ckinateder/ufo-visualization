@@ -6,8 +6,9 @@ class WordCloud {
       colorScale: _config.colorScale,
       containerWidth: _config.containerWidth || 260,
       containerHeight: _config.containerHeight || 300,
-      margin: _config.margin || { top: 25, right: 20, bottom: 20, left: 40 },
+      margin: { top: 50, bottom: 55, right: 10, left: 60 },
       numWords: _config.numWords || 75,
+      title: _config.title || "Word Cloud",
     };
     this.setData(_data, attribute, transformFunction);
     this.initVis();
@@ -119,6 +120,17 @@ class WordCloud {
       });
 
     vis.layout.start();
+
+    // statics
+
+    // Add title
+    vis.svg
+      .append("text")
+      .attr("x", vis.width / 2)
+      .attr("y", 0 + vis.config.margin.top - 10)
+      .attr("text-anchor", "middle")
+      .style("font-size", "16px")
+      .text(vis.config.title);
   }
   getWordsByFrequency(texts) {
     let vis = this;
