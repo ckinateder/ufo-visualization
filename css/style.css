@@ -37,12 +37,16 @@
 #filter-container {
   width: fit-content;
   height: 7em;
+  font-size: 12px;
 }
 .filter-item {
   display: flex;
   align-items: center;
 }
 
+.controls {
+  font-size: 12px;
+}
 #tooltip {
   position: absolute;
   opacity: 0;
@@ -62,5 +66,4 @@
 * {
   font-family: "Kode Mono", monospace;
   font-optical-sizing: auto;
-  font-size: 12px;
 }
