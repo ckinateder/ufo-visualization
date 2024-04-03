@@ -1,7 +1,3 @@
-#ufo-map {
-  height: 600px;
-}
-
 .side-by {
   display: flex;
   justify-content: left;
@@ -24,9 +20,10 @@
   height: fit-content;
   border-right: #333 1px solid;
 }
-#ufo-wordcloud {
-  border-top: #333 1px solid;
+#ufo-map {
+  height: 600px;
 }
+
 #ufo-shape-trends {
   border-bottom: none;
 }
