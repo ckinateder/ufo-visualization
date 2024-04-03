@@ -39,7 +39,7 @@
   height: 7em;
   font-size: 12px;
   padding: 0px 0px 0px 10px;
-  border-left: #333 1px solid;
+  /*border-left: #333 1px solid;*/
 }
 #control-container {
   width: fit-content;
