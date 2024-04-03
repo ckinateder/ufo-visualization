@@ -208,11 +208,11 @@ d3.csv("data/ufo_sightings.csv")
     updateColoring();
 
     d3.select("#map-background")
-    .selectAll("option")
-    .data(["OpenStreetMap" , "Topographic", "Satellite"])
-    .enter()
-    .append("option")
-    .text((d) => d);
+      .selectAll("option")
+      .data(["OpenStreetMap", "Topographic", "Satellite"])
+      .enter()
+      .append("option")
+      .text((d) => d);
     mapBackground = defaultMapBackground;
 
     d3.select("#map-background").property("value", defaultMapBackground);
@@ -297,7 +297,7 @@ function renderFilter() {
     .data(dataFilter)
     .join("div")
     .attr("class", "filter-item")
-    .text((d) => d.description)
+    .text((d) => "+ " + d.description)
     .on("click", (event, d) => {
       removeFilter(d.id);
       getChartById(d.id).resetBrushArea();
