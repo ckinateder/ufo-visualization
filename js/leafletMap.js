@@ -23,19 +23,24 @@ class LeafletMap {
     let vis = this;
 
     //this is the base map layer, where we are showing the map background
-    vis.base_layer = L.tileLayer(
-      "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-      {
+    vis.baseLayers = {
+      "OpenStreetMap": L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }
-    );
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }),
+      "Topographic": L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
+        maxZoom: 17,
+        attribution: '&copy; <a href="https://opentopomap.org">OpenTopoMap</a> contributors',
+      }),
+      "Satellite": L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+      }),
+    };
 
-    vis.theMap = L.map(this.config.parentElement, {
-      center: this.config.defaultCenter,
-      zoom: this.config.defaultZoom,
-      layers: [vis.base_layer],
+    vis.theMap = L.map(vis.config.parentElement, {
+      center: vis.config.defaultCenter,
+      zoom: vis.config.defaultZoom,
+      layers: [vis.baseLayers.OpenStreetMap], //Default map
     });
 
     //if you stopped here, you would just have a map
@@ -217,6 +222,10 @@ class LeafletMap {
     }
     this.colorScaleFunction = (d) => vis.colorScale(vis.colorBy(d));
   }
+
+  
+
+
 
   renderVis() {
     let vis = this;
