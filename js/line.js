@@ -43,6 +43,7 @@ class TimeLineChart {
   updateVis() {
     let vis = this; // create svg element
 
+    vis.svg.selectAll("*").remove();
     // resuable function to get the x and y value
     let xValue = (d) => d[vis.attribute1];
     let yValue = (d) => d[vis.attribute2];

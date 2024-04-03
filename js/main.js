@@ -23,6 +23,8 @@ const defaultAccentColor = "#FFB400";
 
 const colorByOptions = ["year", "month", "time", "shape"];
 const defaultColoring = "year";
+const mapBackgroundOptions = ["OpenStreetMap", "Topographic", "Satellite"];
+const defaultMapBackground = "OpenStreetMap";
 
 d3.csv("data/ufo_sightings.csv")
   .then((data) => {
@@ -204,12 +206,28 @@ d3.csv("data/ufo_sightings.csv")
 
     d3.select("#coloring").property("value", defaultColoring);
     updateColoring();
+
+    d3.select("#map-background")
+    .selectAll("option")
+    .data(["OpenStreetMap" , "Topographic", "Satellite"])
+    .enter()
+    .append("option")
+    .text((d) => d);
+    mapBackground = defaultMapBackground;
+
+    d3.select("#map-background").property("value", defaultMapBackground);
+    updateMapBackground();
   })
 
   .catch((error) => console.error(error));
 
 function updateColoring() {
   leafletMap.setColoring(coloring);
+  leafletMap.updateVis();
+}
+
+function updateMapBackground() {
+  leafletMap.setMapBackground(mapBackground);
   leafletMap.updateVis();
 }
 
@@ -325,7 +343,10 @@ function resetAll() {
   coloring = defaultColoring;
   d3.select("#coloring").property("value", defaultColoring);
   updateColoring();
-
+  //reset the map background
+  mapBackground = defaultMapBackground;
+  d3.select("#map-background").property("value", defaultMapBackground);
+  updateMapBackground();
   // reset map
   leafletMap.resetMap();
 
@@ -371,4 +392,10 @@ d3.select("#coloring").on("change", () => {
   // get selection value
   coloring = d3.select("#coloring").property("value");
   updateColoring();
+});
+
+d3.select("#map-background").on("change", () => {
+  // get map background selection value
+  mapBackground = d3.select("#map-background").property("value");
+  updateMapBackground();
 });

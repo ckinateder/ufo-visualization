@@ -59,6 +59,9 @@ class HistogramChart {
     // reset the brush area if it exists
     this.resetBrushArea();
 
+    // clear the svg
+    vis.svg.selectAll("*").remove();
+
     // add brush
     vis.brush = d3
       .brushX()

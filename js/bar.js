@@ -58,6 +58,7 @@ class BarChart {
     // reset the brush area if it exists
     this.resetBrushArea();
 
+    vis.svg.selectAll("*").remove();
     // add brush
     vis.brush = d3
       .brushX()

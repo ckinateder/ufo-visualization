@@ -38,14 +38,25 @@
   width: fit-content;
   height: 7em;
   font-size: 12px;
+  padding: 0px 0px 0px 10px;
+  border-left: #333 1px solid;
 }
-.filter-item {
-  display: flex;
-  align-items: center;
-}
-
-.controls {
+#control-container {
+  width: fit-content;
   font-size: 12px;
+  padding: 0px 10px 0px 10px;
+  .filter-item {
+    display: flex;
+    align-items: center;
+  }
+}
+#controls-and-filters {
+  display: flex;
+  justify-content: left;
+  width: fit-content;
+  height: min-content;
+  /* center height */
+  align-items: center;
 }
 #tooltip {
   position: absolute;
