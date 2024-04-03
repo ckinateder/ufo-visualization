@@ -223,8 +223,25 @@ class LeafletMap {
     this.colorScaleFunction = (d) => vis.colorScale(vis.colorBy(d));
   }
 
-  
+  //change out the map background
+  setMapBackground(mapBackground) {
+    let vis = this;
 
+    if (mapBackground === "OpenStreetMap") {
+      vis.theMap.addLayer(vis.baseLayers.OpenStreetMap);
+      vis.theMap.removeLayer(vis.baseLayers.Topographic);
+      vis.theMap.removeLayer(vis.baseLayers.Satellite);
+      
+    } else if (mapBackground === "Topographic") {
+      vis.theMap.addLayer(vis.baseLayers.Topographic);
+      vis.theMap.removeLayer(vis.baseLayers.OpenStreetMap);
+      vis.theMap.removeLayer(vis.baseLayers.Satellite);
+    } else if (mapBackground === "Satellite") {
+      vis.theMap.addLayer(vis.baseLayers.Satellite);
+      vis.theMap.removeLayer(vis.baseLayers.OpenStreetMap);
+      vis.theMap.removeLayer(vis.baseLayers.Topographic);
+    }
+  }
 
 
   renderVis() {
